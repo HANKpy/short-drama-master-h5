@@ -1,0 +1,16 @@
+# 构建产物（跑 python3 build.py 生成）
+dist/
+
+# Python / Node
+__pycache__/
+*.pyc
+node_modules/
+
+# 编辑器与系统
+.vscode/
+.DS_Store
+Thumbs.db
+
+# 临时文件
+*.tmp
+*.bak
