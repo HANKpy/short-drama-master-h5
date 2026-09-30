@@ -1,0 +1,2174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+  <meta content="#7c5cff" name="theme-color">
+  <title>短剧全链条大师</title>
+  <style>
+/* ============================================================
+ * 短剧全链条大师 · 样式
+ * 移动优先（<=899px 底部 Tab），PC（>=900px 左侧栏 + 居中宽屏内容）
+ * 设计基调：大留白、轻描边、柔和阴影、克制的单色系品牌色
+ * ============================================================ */
+:root {
+  --brand: #6d5efc;
+  --brand-2: #4f8cff;
+  --brand-soft: #eeecff;
+  --bg: #f7f8fc;
+  --card: #ffffff;
+  --text: #191c24;
+  --text-2: #6b7180;
+  --text-3: #9aa0ad;
+  --line: #ebedf3;
+  --ok: #2ec5a8;
+  --warn: #ffb020;
+  --danger: #ff5a5f;
+  --radius: 18px;
+  --radius-sm: 12px;
+  --shadow: 0 1px 2px rgba(24, 28, 39, .04), 0 6px 20px rgba(24, 28, 39, .05);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --gutter: 16px;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.65 -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", "Microsoft YaHei", sans-serif;
+  padding-bottom: calc(64px + var(--safe-b));
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- 顶栏 ---------- */
+#topbar {
+  position: sticky; top: 0; z-index: 30;
+  background: rgba(247, 248, 252, .82);
+  backdrop-filter: saturate(180%) blur(14px);
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
+  padding: 14px var(--gutter) 10px;
+  display: flex; align-items: center; gap: 10px;
+}
+#topbar .logo { font-size: 16px; font-weight: 700; letter-spacing: .3px; }
+#topbar .logo em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+#project-chip {
+  margin-left: auto; font-size: 12px; color: var(--text-2);
+  background: #fff; border: 1px solid var(--line);
+  padding: 5px 12px; border-radius: 999px; max-width: 44vw;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.hidden { display: none !important; }
+
+/* ---------- 容器 ---------- */
+.shell { display: block; }
+#main { min-height: 60vh; }
+.view, #main > * { padding: 4px var(--gutter) 24px; }
+
+/* ---------- Hero ---------- */
+.hero {
+  margin: 10px 0 18px; padding: 26px 20px;
+  border-radius: 24px; color: #fff; position: relative; overflow: hidden;
+  background: linear-gradient(135deg, #6d5efc 0%, #4f8cff 58%, #23c9a9 135%);
+  box-shadow: 0 12px 30px rgba(109, 94, 252, .26);
+}
+.hero::after {
+  content: ""; position: absolute; right: -46px; top: -56px;
+  width: 190px; height: 190px; border-radius: 50%;
+  background: rgba(255, 255, 255, .12);
+}
+.hero::before {
+  content: ""; position: absolute; right: 34px; bottom: -66px;
+  width: 128px; height: 128px; border-radius: 50%;
+  background: rgba(255, 255, 255, .08);
+}
+.hero-title { font-size: 23px; font-weight: 800; letter-spacing: .5px; position: relative; }
+.hero-sub { font-size: 13px; opacity: .93; margin-top: 8px; position: relative; line-height: 1.6; }
+.hero-flow { display: flex; align-items: center; flex-wrap: wrap; gap: 3px; margin-top: 16px; position: relative; }
+.flow-node {
+  font-size: 11.5px; padding: 4px 9px; border-radius: 7px;
+  background: rgba(255, 255, 255, .18); border: 1px solid rgba(255, 255, 255, .26);
+}
+.flow-arrow { opacity: .55; font-size: 12px; }
+
+/* ---------- 卡片 ---------- */
+.card {
+  background: var(--card); border-radius: var(--radius);
+  padding: 18px; margin-bottom: 16px;
+  box-shadow: var(--shadow); border: 1px solid rgba(24, 28, 39, .045);
+}
+.card-title {
+  font-size: 15px; font-weight: 700; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+}
+.card-sub { font-size: 12.5px; color: var(--text-2); margin: -6px 0 12px; line-height: 1.65; }
+
+/* ---------- 表单 ---------- */
+.field { margin-bottom: 14px; }
+.field label {
+  display: block; font-size: 12.5px; color: var(--text-2);
+  margin-bottom: 7px; font-weight: 600;
+}
+.field .hint { color: var(--text-3); font-weight: 400; }
+input[type=text], input[type=number], textarea, select {
+  width: 100%; border: 1px solid var(--line); background: #fbfbfd;
+  border-radius: var(--radius-sm); padding: 11px 13px; font-size: 14px; color: var(--text);
+  font-family: inherit; outline: none; transition: border-color .18s, box-shadow .18s, background .18s;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: var(--brand); background: #fff;
+  box-shadow: 0 0 0 3px rgba(109, 94, 252, .13);
+}
+textarea { resize: vertical; line-height: 1.7; }
+.big-input { min-height: 116px; font-size: 14.5px; line-height: 1.75; }
+
+.grid-2, .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 340px) { .grid-2, .grid-form { grid-template-columns: 1fr; } }
+
+/* 分段选择 */
+.seg { display: flex; gap: 7px; }
+.seg-item {
+  flex: 1; text-align: center; font-size: 13.5px; padding: 10px 4px;
+  border-radius: var(--radius-sm); background: #f4f5f9; color: var(--text-2);
+  cursor: pointer; transition: .18s; border: 1px solid transparent; user-select: none;
+}
+.seg-item.active {
+  background: var(--brand-soft); color: var(--brand); font-weight: 700;
+  border-color: rgba(109, 94, 252, .3);
+}
+
+/* ---------- 按钮 ---------- */
+.btn {
+  border: none; background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  color: #fff; font-size: 15px; font-weight: 600; padding: 13px 20px;
+  border-radius: 14px; cursor: pointer; box-shadow: 0 4px 14px rgba(109, 94, 252, .28);
+  transition: transform .12s, opacity .18s; font-family: inherit;
+}
+.btn:active { transform: scale(.98); }
+.btn.line { background: #fff; color: var(--brand); border: 1px solid rgba(109, 94, 252, .32); box-shadow: none; }
+.btn.ghost { background: #f4f5f9; color: var(--text-2); box-shadow: none; }
+.btn.danger { background: #fff; color: var(--danger); border: 1px solid rgba(255, 90, 95, .32); box-shadow: none; }
+.btn.block { display: block; width: 100%; }
+.btn.sm { padding: 7px 13px; font-size: 13px; border-radius: 10px; }
+.btn.big { padding: 16px; font-size: 16.5px; border-radius: 15px; }
+.btn-row { display: flex; gap: 10px; margin: 4px 0 18px; }
+.btn-row .btn { flex: 1; }
+.icon-btn { background: none; border: none; font-size: 16px; cursor: pointer; padding: 4px; opacity: .7; }
+.tip { font-size: 12px; color: var(--text-3); text-align: center; margin-top: 12px; line-height: 1.65; }
+
+/* ---------- 标签 ---------- */
+.tag {
+  font-size: 11px; padding: 3px 9px; border-radius: 7px;
+  background: var(--brand-soft); color: var(--brand); font-weight: 600;
+}
+.tag.gray { background: #f0f1f5; color: var(--text-2); }
+.tag.green { background: #e6f9f4; color: #12a88c; }
+.tag.orange { background: #fff1e4; color: #e08b20; }
+
+/* ---------- 示例 chips ---------- */
+.samples { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 10px; }
+.chip-sample {
+  font-size: 12px; padding: 7px 11px; border-radius: 9px; cursor: pointer;
+  background: #f4f5f9; border: 1px solid var(--line); color: var(--text-2);
+  font-family: inherit; transition: .15s;
+}
+.chip-sample:hover { background: var(--brand-soft); color: var(--brand); }
+
+/* ============================================================
+ * 流水线运行页
+ * ============================================================ */
+.run-wrap { padding: 20px 4px; }
+.ring-box { position: relative; width: 152px; height: 152px; margin: 8px auto 0; }
+.ring { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring-bg { fill: none; stroke: #eceef3; stroke-width: 9; }
+.ring-fg {
+  fill: none; stroke: var(--brand); stroke-width: 9; stroke-linecap: round;
+  transition: stroke-dashoffset .45s cubic-bezier(.4, 0, .2, 1);
+}
+.ring-text {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: var(--text-2);
+}
+.ring-text b { font-size: 33px; color: var(--text); font-weight: 800; margin-right: 2px; }
+.run-now { text-align: center; font-size: 14.5px; font-weight: 600; margin: 12px 0 20px; color: var(--brand); }
+
+.stage-list { margin-bottom: 16px; }
+.st {
+  display: flex; align-items: center; gap: 11px; padding: 11px 13px;
+  border-radius: 14px; margin-bottom: 7px; background: #fff; opacity: .5;
+  transition: .3s; border: 1px solid transparent;
+}
+.st.done { opacity: 1; background: #f4fdfa; border-color: rgba(46, 197, 168, .2); }
+.st.now { opacity: 1; border-color: rgba(109, 94, 252, .35); box-shadow: 0 4px 14px rgba(109, 94, 252, .12); }
+.st-ico { font-size: 16px; width: 22px; text-align: center; }
+.st.done .st-ico { color: var(--ok); font-weight: 800; }
+.st-main { display: flex; flex-direction: column; min-width: 0; }
+.st-main b { font-size: 13.5px; }
+.st-main i { font-style: normal; font-size: 11.5px; color: var(--text-3); }
+.spinner {
+  margin-left: auto; width: 15px; height: 15px; border-radius: 50%; flex-shrink: 0;
+  border: 2px solid var(--brand-soft); border-top-color: var(--brand);
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.log-box {
+  background: #16181f; color: #c9d1d9; border-radius: 14px; padding: 14px;
+  font: 12px/1.8 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  max-height: 200px; overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
+.log-line { animation: fadein .3s; }
+.log-tag { color: #a48cff; font-weight: 700; }
+.log-box b { color: #7ee0c0; }
+.log-err { color: #ff7b7f; }
+@keyframes fadein { from { opacity: 0; transform: translateY(3px); } }
+
+/* ============================================================
+ * 成果页
+ * ============================================================ */
+.result-head { display: flex; align-items: center; gap: 12px; margin: 12px 0 16px; }
+.rh-title { font-size: 19px; font-weight: 800; letter-spacing: .2px; }
+.rh-sub { font-size: 12.5px; color: var(--text-2); margin-top: 3px; }
+.result-head .btn { margin-left: auto; flex-shrink: 0; }
+
+.subtabs {
+  display: flex; gap: 5px; background: #edeff5; padding: 4px;
+  border-radius: 13px; margin-bottom: 16px;
+}
+.subtab {
+  flex: 1; text-align: center; font-size: 13.5px; padding: 9px;
+  border-radius: 10px; cursor: pointer; color: var(--text-2); transition: .18s;
+}
+.subtab.active { background: #fff; color: var(--brand); font-weight: 700; box-shadow: 0 2px 8px rgba(0, 0, 0, .06); }
+
+/* 统计卡 */
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+.stat {
+  background: #fff; border-radius: 14px; padding: 14px 6px; text-align: center;
+  box-shadow: var(--shadow); border: 1px solid rgba(24, 28, 39, .045);
+}
+.stat b { display: block; font-size: 18px; font-weight: 800; color: var(--brand); line-height: 1.35; }
+.stat span { font-size: 11.5px; color: var(--text-3); }
+
+/* 图表 */
+.chart { width: 100%; height: 136px; display: block; margin-top: 8px; }
+.bars { margin-top: 6px; }
+.bar-row { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; }
+.bar-name { width: 54px; font-size: 12px; color: var(--text-2); flex-shrink: 0; }
+.bar-track { flex: 1; height: 9px; background: #f0f1f5; border-radius: 5px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 5px; transition: width .6s cubic-bezier(.4, 0, .2, 1); }
+.bar-val { width: 56px; text-align: right; font-size: 11.5px; color: var(--text-3); flex-shrink: 0; }
+
+/* 五阶段 */
+.arc-row { display: flex; align-items: center; gap: 11px; padding: 9px 0; border-top: 1px solid var(--line); }
+.arc-row:first-of-type { border-top: none; }
+.arc-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.arc-main { width: 96px; flex-shrink: 0; }
+.arc-main b { display: block; font-size: 13px; }
+.arc-main i { font-style: normal; font-size: 11px; color: var(--text-3); }
+.arc-desc { font-size: 12.5px; color: var(--text-2); line-height: 1.55; }
+
+/* 角色 */
+.char-row { display: flex; gap: 11px; padding: 11px 0; border-top: 1px solid var(--line); }
+.char-row:first-of-type { border-top: none; }
+.char-ava {
+  width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px;
+}
+.char-main { min-width: 0; }
+.char-main b { font-size: 14.5px; }
+.char-look { font-size: 12px; color: var(--text-2); margin-top: 3px; line-height: 1.55; }
+.char-goal { font-size: 11.5px; color: var(--text-3); margin-top: 2px; }
+
+/* 集选择 */
+.ep-scroll {
+  display: flex; gap: 7px; overflow-x: auto; padding: 2px 0 12px;
+  -webkit-overflow-scrolling: touch; scrollbar-width: none;
+}
+.ep-scroll::-webkit-scrollbar { display: none; }
+.ep-chip {
+  min-width: 40px; height: 36px; flex-shrink: 0; border-radius: 10px;
+  background: #fff; color: var(--text-2); font-size: 13px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow); cursor: pointer; transition: .18s;
+}
+.ep-chip.active { background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: #fff; }
+
+/* 时间轴 */
+.timeline { display: flex; height: 36px; border-radius: 9px; overflow: hidden; margin: 6px 0 10px; }
+.tl-seg {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: #fff; font-weight: 700; border-right: 1px solid rgba(255, 255, 255, .45);
+  min-width: 22px; transition: filter .18s;
+}
+.tl-seg:last-child { border-right: none; }
+.tl-seg:active { filter: brightness(.9); }
+.tl-legend { display: flex; flex-wrap: wrap; gap: 9px; }
+.lg { font-size: 11px; color: var(--text-3); display: flex; align-items: center; gap: 4px; }
+.lg i { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+
+/* 镜头卡 */
+.shot { padding: 16px; }
+.shot-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.shot-no { font-size: 13.5px; font-weight: 800; color: var(--brand); }
+.shot-fn { font-size: 12.5px; font-weight: 600; }
+.shot-dur { margin-left: auto; font-size: 11.5px; color: var(--text-3); }
+.shot-params { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 11px; }
+.sp { font-size: 11.5px; padding: 3px 9px; border-radius: 7px; background: #f4f5f9; color: var(--text-2); }
+.sp.snd { background: #fff6e8; color: #c98a1a; }
+
+/* 提示词 */
+.prompt-block {
+  white-space: pre-wrap; word-break: break-word; font-size: 12.5px; line-height: 1.9;
+  background: #fbfbfd; border: 1px solid var(--line); border-radius: 14px;
+  padding: 14px; margin: 0; max-height: 460px; overflow-y: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+.hl-ref { color: #e0568a; font-weight: 700; }
+.hl-shot { color: #6d5efc; font-weight: 700; }
+.hl-line { color: #12a88c; }
+.hl-snd { color: #c98a1a; }
+.hl-key { color: #4f8cff; font-weight: 700; }
+
+/* ---------- 项目列表 ---------- */
+.item { display: flex; align-items: center; padding: 13px 0; border-top: 1px solid var(--line); }
+.item:first-child { border-top: none; }
+.item-main { flex: 1; cursor: pointer; min-width: 0; }
+.item-title { font-size: 14.5px; font-weight: 600; }
+.item-sub { font-size: 12px; color: var(--text-3); margin-top: 3px; }
+.item-actions { display: flex; gap: 2px; }
+
+/* ---------- 知识库 ---------- */
+.kb-section { margin-bottom: 20px; }
+.kb-section-title { font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+.kb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.kb-chip {
+  background: #fff; border-radius: 14px; padding: 12px; cursor: pointer;
+  box-shadow: var(--shadow); transition: transform .15s;
+  border: 1px solid rgba(24, 28, 39, .045);
+}
+.kb-chip:active { transform: scale(.97); }
+.kb-name { font-size: 13px; font-weight: 700; }
+.kb-sub { font-size: 11px; color: var(--text-3); margin-top: 4px; line-height: 1.5; }
+
+/* ---------- 空状态 ---------- */
+.empty { text-align: center; padding: 64px 20px; }
+.empty-ico { font-size: 48px; }
+.empty h3 { font-size: 16.5px; margin: 14px 0 6px; }
+.empty p { font-size: 13.5px; color: var(--text-2); margin: 0; }
+
+/* ---------- 抽屉（移动端底部弹出 / PC 居中弹窗） ---------- */
+.drawer-mask { position: fixed; inset: 0; background: rgba(0, 0, 0, .42); z-index: 50; animation: fadein .2s; }
+.drawer {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 51;
+  background: #fff; border-radius: 22px 22px 0 0; padding: 16px 18px calc(22px + var(--safe-b));
+  max-height: 76vh; overflow-y: auto; animation: up .28s cubic-bezier(.3, 1, .4, 1);
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, .14);
+}
+@keyframes up { from { transform: translateY(100%); } }
+.drawer-handle { width: 38px; height: 4px; background: #dfe2ea; border-radius: 2px; margin: 0 auto 14px; }
+.drawer h3 { font-size: 16.5px; margin: 0 0 12px; }
+.kv { font-size: 13.5px; color: var(--text-2); margin-bottom: 9px; line-height: 1.7; }
+.kv b { color: var(--text); }
+
+/* ---------- Tab 栏（移动端：底部） ---------- */
+#tabbar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+  display: flex; background: rgba(255, 255, 255, .94);
+  backdrop-filter: saturate(180%) blur(14px);
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
+  border-top: 1px solid var(--line);
+  padding-bottom: var(--safe-b);
+}
+.tab {
+  flex: 1; text-align: center; padding: 9px 0 8px; cursor: pointer;
+  color: var(--text-3); font-size: 11px; transition: .18s;
+}
+.tab .ti { display: block; font-size: 19px; line-height: 1.25; }
+.tab .tx { display: block; margin-top: 1px; }
+.tab.active { color: var(--brand); font-weight: 700; }
+
+/* ---------- Toast ---------- */
+#toast {
+  position: fixed; left: 50%; bottom: 86px; transform: translateX(-50%) translateY(10px);
+  background: rgba(25, 28, 36, .93); color: #fff; font-size: 13px;
+  padding: 10px 18px; border-radius: 999px; z-index: 60;
+  opacity: 0; pointer-events: none; transition: .25s; max-width: 80vw; text-align: center;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ============================================================
+ * PC 端（>=900px）：左侧栏 + 居中内容 + 多列栅格
+ * ============================================================ */
+@media (min-width: 900px) {
+  :root { --gutter: 32px; }
+
+  body { padding-bottom: 0; }
+
+  #app { display: flex; align-items: stretch; min-height: 100vh; }
+
+  /* 底部 Tab → 左侧栏 */
+  #tabbar {
+    position: sticky; top: 0; left: auto; right: auto; bottom: auto;
+    width: 216px; flex: 0 0 216px; height: 100vh;
+    flex-direction: column; align-items: stretch;
+    border-top: none; border-right: 1px solid var(--line);
+    padding: 18px 12px; background: rgba(255, 255, 255, .96);
+  }
+  .tab {
+    display: flex; align-items: center; gap: 12px;
+    text-align: left; padding: 12px 14px; margin-bottom: 4px;
+    border-radius: 12px; font-size: 14.5px; color: var(--text-2);
+  }
+  .tab .ti { font-size: 18px; line-height: 1; }
+  .tab .tx { margin-top: 0; font-weight: 500; }
+  .tab:hover { background: #f4f5f9; }
+  .tab.active { background: var(--brand-soft); color: var(--brand); }
+
+  /* 内容区：限宽居中 */
+  .shell { flex: 1; min-width: 0; }
+  #topbar { padding: 20px 40px 14px; }
+  #topbar .logo { font-size: 18px; }
+  #main { max-width: 1060px; margin: 0 auto; }
+  .view, #main > * { padding: 8px 40px 40px; }
+
+  /* Hero 更舒展 */
+  .hero { padding: 40px 44px; border-radius: 26px; margin-bottom: 22px; }
+  .hero-title { font-size: 30px; }
+  .hero-sub { font-size: 14.5px; margin-top: 10px; max-width: 62%; }
+  .hero-flow { margin-top: 22px; gap: 5px; }
+  .flow-node { font-size: 12.5px; padding: 5px 12px; }
+
+  /* 卡片与表单更宽松 */
+  .card { padding: 22px; margin-bottom: 18px; }
+  .card-title { font-size: 15.5px; margin-bottom: 14px; }
+
+  /* 创作配置 4 列 */
+  .grid-form { grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .grid-2 { gap: 14px; }
+
+  /* 统计卡放宽 */
+  .stat-grid { gap: 14px; margin-bottom: 18px; }
+  .stat { padding: 18px 8px; }
+  .stat b { font-size: 22px; }
+
+  /* 知识库多列 */
+  .kb-grid { grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+  /* 提示词更高，减少滚动 */
+  .prompt-block { max-height: 640px; font-size: 13px; padding: 18px; }
+
+  /* 时间轴与图表 */
+  .timeline { height: 44px; }
+  .chart { height: 168px; }
+
+  /* 抽屉改为居中弹窗 */
+  .drawer {
+    left: 50%; right: auto; bottom: auto; top: 50%;
+    transform: translate(-50%, -50%);
+    width: min(560px, 92vw); border-radius: 20px;
+    padding: 24px 26px; max-height: 80vh;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, .2);
+  }
+  .drawer-handle { display: none; }
+
+  /* 运行页：日志区加宽 */
+  .run-wrap { padding: 32px 0; }
+  .log-box { max-height: 260px; }
+
+  /* Toast 移到右下 */
+  #toast { left: auto; right: 32px; bottom: 32px; transform: translateY(10px); }
+  #toast.show { transform: translateY(0); }
+
+  /* 两个按钮并排时不要占满整行 */
+  .btn-row { max-width: 520px; }
+}
+
+/* 超宽屏：内容再宽一点 */
+@media (min-width: 1440px) {
+  #main { max-width: 1180px; }
+}
+
+</style>
+</head>
+<body>
+  <div id="app">
+    <!-- 移动端：底部 Tab 栏；PC 端：左侧栏（由 CSS 媒体查询切换） -->
+    <nav id="tabbar">
+      <div class="tab active" data-tab="create">
+        <span class="ti">🚀</span><span class="tx">创作</span>
+      </div>
+      <div class="tab" data-tab="projects">
+        <span class="ti">📁</span><span class="tx">项目</span>
+      </div>
+      <div class="tab" data-tab="knowledge">
+        <span class="ti">📚</span><span class="tx">知识库</span>
+      </div>
+      <div class="tab" data-tab="about">
+        <span class="ti">⚙️</span><span class="tx">我的</span>
+      </div>
+    </nav>
+
+    <div class="shell">
+      <header id="topbar">
+        <div class="logo">短剧<em>全链条</em>大师</div>
+        <span class="hidden" id="project-chip"></span>
+        <div class="hidden" id="stepper"></div>
+      </header>
+      <main id="main"></main>
+    </div>
+
+    <div id="toast"></div>
+  </div>
+
+  <script>
+/* ============================================================
+ * 短剧全链条大师 · 内置知识库
+ * 数据源自 short-drama-master / h3-video-prompt / seedance-video-prompt 技能
+ * ============================================================ */
+window.KB = (function () {
+  /* ---------- 17 大题材 ---------- */
+  const genres = [
+    { name: "逆袭打脸", covers: "男频赘婿·重生复仇·都市异能·战神归来·神医鉴宝", core: "身份/能力被低估后的反转，打压者系统性被打脸", cliff: "信息差40%+动作悬停30%+选择悬崖30%", shots: { cu: 45, mcu: 35, ms: 20, ls: 0 } },
+    { name: "甜宠情感", covers: "女频甜宠·霸总·先婚后爱·青梅竹马·萌宝·契约恋爱", core: "情感关系渐进升温 + 误会解除释放感", cliff: "情感审判50%+信息差30%+关系确认20%", shots: { cu: 50, mcu: 35, ms: 15, ls: 0 } },
+    { name: "虐恋追妻", covers: "追妻火葬场·虐恋·破镜重圆·替身文学", core: "男主后期卑微悔恨 + 女主成长后冷漠拒绝→最终原谅", cliff: "情感审判50%+动作悬停30%+信息差20%", shots: { cu: 50, mcu: 30, ms: 20, ls: 0 } },
+    { name: "悬疑解谜", covers: "悬疑·推理·刑侦·谍战·灵异探险·规则怪谈", core: "真相揭露的智识快感 + 反转的认知冲击", cliff: "信息差60%+动作悬停30%+选择悬崖10%", shots: { cu: 40, mcu: 30, ms: 30, ls: 0 } },
+    { name: "生存压迫", covers: "末世求生·丧尸·灾变·生存冒险", core: "极限求生刺激 + 资源获取满足感 + 人性抉择张力", cliff: "动作悬停40%+选择悬崖40%+信息差20%", shots: { cu: 40, mcu: 35, ms: 25, ls: 0 } },
+    { name: "竞技淘汰", covers: "大逃杀·生存竞技·淘汰赛·闯关游戏", core: "淘汰对手碾压快感 + 绝境反杀刺激 + 规则利用智识快感", cliff: "动作悬停40%+信息差30%+选择悬崖30%", shots: { cu: 35, mcu: 40, ms: 25, ls: 0 } },
+    { name: "豪门权谋", covers: "女频豪门·宅斗·宫斗·男频商战·帮派权谋", core: "表面隐忍暗中布局 + 当众揭露碾压 + 人际操控", cliff: "信息差40%+身份揭露30%+情感审判30%", shots: { cu: 45, mcu: 35, ms: 20, ls: 0 } },
+    { name: "能力成长", covers: "玄幻·奇幻·修仙·异能觉醒·系统流·武侠", core: "战力/技能跃迁 + 新能力震撼展示 + 越级挑战胜利", cliff: "动作悬停50%+选择悬崖30%+信息差20%", shots: { cu: 35, mcu: 40, ms: 25, ls: 0 } },
+    { name: "玄幻修仙", covers: "古典仙侠·洪荒·修仙升级·宗门斗争·渡劫飞升", core: "境界突破震撼感 + 越级碾压 + 法宝功法获取", cliff: "动作悬停45%+信息差35%+身份揭露20%", shots: { cu: 35, mcu: 35, ms: 25, ls: 5 } },
+    { name: "古装权谋", covers: "宫斗·宅斗·朝堂权谋·夺嫡·谋士·女帝", core: "智计碾压 + 布局反转 + 身份揭露 + 权力登顶", cliff: "信息差45%+身份揭露30%+情感审判25%", shots: { cu: 40, mcu: 35, ms: 25, ls: 0 } },
+    { name: "末世科幻", covers: "末世求生·丧尸·灾变·科幻冒险·星际·赛博朋克", core: "极限求生 + 科技/异能碾压 + 真相揭露", cliff: "动作悬停40%+选择悬崖35%+信息差25%", shots: { cu: 35, mcu: 35, ms: 25, ls: 5 } },
+    { name: "无限流", covers: "无限流·副本闯关·系统空间·轮回游戏·生存游戏", core: "规则破解智识快感 + 极限生存 + 副本通关成就感", cliff: "规则悬念40%+动作悬停30%+选择悬崖30%", shots: { cu: 40, mcu: 30, ms: 25, ls: 5 } },
+    { name: "规则怪谈", covers: "规则怪谈·诡异复苏·灵异诅咒·都市传说", core: "规则推理快感 + 违反规则的惊悚冲击 + 真相揭露释然", cliff: "信息差50%+规则悬念30%+动作悬停20%", shots: { cu: 40, mcu: 30, ms: 25, ls: 5 } },
+    { name: "萌宝奶爸", covers: "萌宝·奶爸·带娃逆袭·天才宝宝·亲子日常", core: "萌娃可爱治愈 + 宝宝神助攻打脸 + 亲子情感升温", cliff: "情感审判40%+信息差30%+萌点悬念30%", shots: { cu: 45, mcu: 35, ms: 20, ls: 0 } },
+    { name: "年代文", covers: "八零九零·重生年代·知青·改革开放创业·乡土发家", core: "时代信息差降维打击 + 发家致富 + 年代情怀共鸣", cliff: "信息差40%+身份揭露30%+情感审判30%", shots: { cu: 40, mcu: 35, ms: 25, ls: 0 } },
+    { name: "职场逆袭", covers: "职场·商战·升职加薪·行业精英·创业逆袭", core: "专业能力碾压 + 职场斗争胜利 + 升职加薪成就感", cliff: "信息差40%+身份揭露30%+选择悬崖30%", shots: { cu: 40, mcu: 35, ms: 25, ls: 0 } },
+    { name: "校园青春", covers: "校园·青春·学霸逆袭·校园暗恋·运动会竞赛", core: "学霸碾压快感 + 青春悸动甜蜜 + 成长蜕变共鸣", cliff: "情感审判50%+信息差30%+选择悬崖20%", shots: { cu: 50, mcu: 35, ms: 15, ls: 0 } }
+  ];
+
+  /* ---------- 20 大风格 ---------- */
+  const styles = [
+    { id: "S01", name: "仿真人写实", suit: "现代都市·职场", prefix: "超写实电影质感，自然光线，真实皮肤纹理，8K高清" },
+    { id: "S02", name: "日漫", suit: "校园·热血·异世界", prefix: "日式动画风格，精致线条，清新色调，动态分镜感" },
+    { id: "S03", name: "国漫", suit: "仙侠·玄幻·武侠", prefix: "国漫风格，唯美水墨晕染，大气磅礴，电影级画面" },
+    { id: "S04", name: "3D动画", suit: "奇幻冒险·儿童向", prefix: "3D动画质感，立体建模，柔和光影，童趣色彩" },
+    { id: "S05", name: "皮克斯风", suit: "家庭·喜剧·萌宝", prefix: "皮克斯动画风格，圆润造型，温暖色彩，治愈感" },
+    { id: "S06", name: "赛博朋克", suit: "科幻·无限流", prefix: "赛博朋克风格，霓虹光效，冷蓝紫调，未来都市感" },
+    { id: "S07", name: "复古港风", suit: "90年代香港·年代文", prefix: "90年代港风写实质感，胶片颗粒，复古色调，电影级质感" },
+    { id: "S08", name: "新中式水墨", suit: "古言·仙侠", prefix: "新中式水墨风格，留白意境，淡雅配色，东方美学" },
+    { id: "S09", name: "韩剧清新", suit: "甜宠·都市爱情", prefix: "韩剧质感，清新自然，明亮柔和光线，电影级调色" },
+    { id: "S10", name: "暗黑奇幻", suit: "悬疑·规则怪谈·末世", prefix: "暗黑奇幻风格，冷峻色调，强明暗对比，压抑氛围" },
+    { id: "S11", name: "日系治愈", suit: "日常·美食·家庭", prefix: "日系治愈风格，温暖自然光，柔和色调，生活气息" },
+    { id: "S12", name: "美式漫画", suit: "超级英雄·动作", prefix: "美式漫画风格，粗犷线条，高饱和色，硬朗画风" },
+    { id: "S13", name: "蒸汽朋克", suit: "维多利亚·工业革命", prefix: "蒸汽朋克风格，黄铜齿轮，机械质感，复古未来感" },
+    { id: "S14", name: "暗黑哥特", suit: "吸血鬼·中世纪", prefix: "暗黑哥特风格，阴郁色调，尖顶建筑，神秘氛围" },
+    { id: "S15", name: "赛博国风", suit: "未来古风·元宇宙", prefix: "赛博国风，科技与传统融合，霓虹与水墨并存" },
+    { id: "S16", name: "国风水墨", suit: "古言·历史", prefix: "国风水墨风格，浓淡干湿，气韵生动，意境悠远" },
+    { id: "S17", name: "像素复古", suit: "游戏穿越·系统流", prefix: "像素复古风格，8bit质感，怀旧游戏界面感" },
+    { id: "S18", name: "黏土定格", suit: "萌宝·童话", prefix: "黏土定格动画，手工质感，可爱造型，童趣满满" },
+    { id: "S19", name: "油画质感", suit: "历史·豪门·悬疑", prefix: "油画质感，厚重笔触，古典色调，艺术感强" },
+    { id: "S20", name: "低多边形", suit: "科幻·数据空间", prefix: "低多边形风格，几何体块，简约现代，科技感" }
+  ];
+
+  /* ---------- 10 套项目模板 ---------- */
+  const templates = [
+    { id: "TPL-001", name: "穿越商战1996香港", type: "逆袭打脸", eps: 20, style: "S07", premise: "2024私募操盘手穿越成1996香港落魄富二代，用未来记忆绝地翻身成为金融大亨。", roles: ["林凡·2024操盘手穿越者·主角", "苏婉清·商业联姻妻子·女主", "肥仔强·追债小混混·搞笑担当", "赵天宇·赵氏集团少东家·反派"], outline: ["穿越适应期，解决三千万高利贷", "成立投资公司，股市初战告捷", "遭遇赵天宇打压，几乎破产", "97金融风暴前布局，绝地反击"] },
+    { id: "TPL-002", name: "重生甜宠", type: "甜宠情感", eps: 20, style: "S09", premise: "重生回结婚前，手撕渣男贱女，转身投入暗恋自己多年的霸总怀抱。", roles: ["苏晚·重生者·女主", "陆景琛·陆氏总裁·男主", "顾言泽·前世渣男丈夫·反派", "林薇薇·继妹白莲花·女反派"], outline: ["重生回到结婚前，手撕渣男", "与陆总契约结婚，日常撒糖", "渣男贱女作妖被打脸", "陆总表白，真正恋爱"] },
+    { id: "TPL-003", name: "无限流副本", type: "无限流", eps: 24, style: "S06", premise: "主角被卷入无限流游戏，靠规则破解与智谋在副本中绝境求生、不断变强。", roles: ["主角·闯关者", "资深玩家·引路人", "副本BOSS·关卡反派"], outline: ["首个副本，摸清规则", "规则破解，首通副本", "系统奖励，能力提升", "更高难度副本，揭露幕后真相"] },
+    { id: "TPL-004", name: "规则怪谈", type: "规则怪谈", eps: 16, style: "S10", premise: "都市中诡异复苏，主角被迫遵守离奇规则，在违反与遵守之间求存并揭开真相。", roles: ["主角·规则破解者", "引导者·神秘人", "规则源头·最终谜底"], outline: ["遭遇第一条诡异规则", "推理规则，险中求生", "规则反转，真相初现", "破解源头，揭露真相"] },
+    { id: "TPL-005", name: "萌宝奶爸", type: "萌宝奶爸", eps: 20, style: "S05", premise: "奶爸带萌宝逆袭人生，萌宝神助攻打脸反派，亲子情感逐渐升温。", roles: ["奶爸·主角", "萌宝·神助攻", "反派·打脸对象"], outline: ["带娃日常，萌点初现", "宝宝神助攻，打脸反派", "亲子情感升温", "身份揭露，全家团圆"] },
+    { id: "TPL-006", name: "八零年代", type: "年代文", eps: 20, style: "S07", premise: "重生回八零年代，靠时代信息差发家致富，改变家庭命运。", roles: ["主角·重生者", "家人·亲情线", "竞争者·反派"], outline: ["重生八零，白手起家", "抓住商机，赚第一桶金", "遭遇竞争，巧妙破局", "产业成型，改变命运"] },
+    { id: "TPL-007", name: "职场逆袭", type: "职场逆袭", eps: 20, style: "S01", premise: "职场小透明靠专业能力碾压对手，一路升职加薪，完成职场逆袭。", roles: ["主角·职场新人", "伯乐·贵人", "对手·职场反派"], outline: ["初入职场，被打压", "专业碾压，方案打脸", "拿下项目，崭露头角", "职位晋升，登顶行业"] },
+    { id: "TPL-008", name: "校园学霸", type: "校园青春", eps: 16, style: "S02", premise: "校园里的隐藏学霸逆袭，竞赛夺冠，收获青春悸动与成长。", roles: ["主角·学霸", "暗恋对象·同窗", "对手·竞争者"], outline: ["隐藏实力，被轻视", "学霸打脸，一战成名", "竞赛夺冠，青春悸动", "成长蜕变，收获友情"] },
+    { id: "TPL-009", name: "古言权谋", type: "古装权谋", eps: 24, style: "S08", premise: "深宫宅斗中的女子靠智计布局，步步为营，走向权力巅峰。", roles: ["主角·谋士/后妃", "对手·政敌", "盟友·助力"], outline: ["身处险境，隐忍布局", "智计破局，反击政敌", "权力洗牌，登顶巅峰", "拨云见日，真相大白"] },
+    { id: "TPL-010", name: "末世生存", type: "末世科幻", eps: 20, style: "S10", premise: "末世降临，主角觉醒异能，在废墟中带领伙伴求生并揭开灾变真相。", roles: ["主角·异能者", "伙伴·幸存者", "反派·掠夺者"], outline: ["末世降临，觉醒异能", "求生之路，集结伙伴", "遭遇掠夺者，守护家园", "揭露灾变真相，重建希望"] }
+  ];
+
+  /* ---------- 12 种景别 ---------- */
+  const shotSizes = [
+    { name: "大远景", abbr: "ELS", fn: "建立空间/规模/史诗感", use: "开场定调、名场面、大场景、孤独感", avoid: "竖屏慎用（人物太小看不清）" },
+    { name: "全景", abbr: "LS", fn: "展示环境与人物关系/动作全貌", use: "人物登场、动作全景、场景切换首镜", avoid: "对话戏不用（表情看不清）" },
+    { name: "中全景", abbr: "MLS", fn: "动作+部分环境，兼顾动作与表情", use: "打斗、走动中的对话、对峙", avoid: "纯文戏可不用" },
+    { name: "中景", abbr: "MS", fn: "对话/动作关系/日常推进（主力景别）", use: "标准对话、多人互动、信息交代", avoid: "情绪峰值不用（不够近）" },
+    { name: "中近景", abbr: "MCU", fn: "表情+部分肢体，情感对话", use: "情感对话、关键信息交代、单人反应", avoid: "动作戏不用" },
+    { name: "近景", abbr: "CU", fn: "表情反应/情绪/关键瞬间", use: "情绪反应、关键台词、微表情", avoid: "环境交代不用" },
+    { name: "特写", abbr: "BCU", fn: "情绪峰值/内心戏/关键台词", use: "爆点、金句、内心挣扎、身份揭露", avoid: "连续多镜会疲劳" },
+    { name: "大特写", abbr: "ECU", fn: "强调细节/悬念/象征", use: "关键道具、眼神变化、手部动作", avoid: "每集≤2次" },
+    { name: "过肩镜头", abbr: "OTS", fn: "对话关系/主观介入", use: "两人对话、对峙、倾听者反应", avoid: "多人同框不用" },
+    { name: "主观镜头", abbr: "POV", fn: "极致代入/观众=角色", use: "看到关键信息、追逐、恐惧", avoid: "时长≤3秒，需反应镜承接" },
+    { name: "荷兰角", abbr: "Dutch", fn: "不安/疯狂/失衡", use: "精神崩溃、醉酒、诡异、反转瞬间", avoid: "正常场景禁用" },
+    { name: "空镜", abbr: "Insert", fn: "叙事补充/情绪过渡/象征", use: "关键道具、环境细节、时间流逝", avoid: "不能替代人物表演" }
+  ];
+
+  /* ---------- 14 种机位 ---------- */
+  const cameraAngles = [
+    { name: "低机位仰拍", en: "Low Angle", feel: "权威/力量/英雄/压迫", use: "英雄登场、反派压迫、逆袭爆发", emo: "敬畏、压迫、力量" },
+    { name: "高机位俯拍", en: "High Angle", feel: "渺小/无助/被监视", use: "弱者、困境、被包围、失败", emo: "无助、脆弱、被控制" },
+    { name: "顶拍上帝视角", en: "Top-Down", feel: "宿命/棋盘感/格局", use: "群像布局、追逐路线、宿命感", emo: "宿命、客观、上帝" },
+    { name: "平拍眼平", en: "Eye Level", feel: "平等/自然/客观", use: "日常对话、平视交流", emo: "平等、自然、真实" },
+    { name: "身后跟拍", en: "Follow", feel: "代入/临场/紧张", use: "追逐、探索、进入新环境", emo: "紧张、代入、临场" },
+    { name: "正面机位", en: "Frontal", feel: "对峙/直接/挑战", use: "对峙、挑战、宣言", emo: "直接、挑战、对峙" },
+    { name: "侧面机位", en: "Profile", feel: "剪影/动作/疏离", use: "剪影、走路、动作侧面", emo: "疏离、客观、动作" },
+    { name: "3/4侧面", en: "3-Quarter", feel: "立体/自然/最常用", use: "标准人像、对话、大多数场景", emo: "自然、立体、舒适" },
+    { name: "过肩机位", en: "OTS", feel: "对话关系/主观介入", use: "两人对话、正反打", emo: "对话、关系、介入" },
+    { name: "主观机位", en: "POV", feel: "极致代入/观众=角色", use: "角色视角、追逐、恐惧", emo: "极致代入、紧张" },
+    { name: "手持肩扛", en: "Handheld", feel: "临场/真实/慌乱", use: "追逐、慌乱、纪实", emo: "真实、慌乱、临场" },
+    { name: "斯坦尼康", en: "Steadicam", feel: "流畅/沉浸/长镜头", use: "长镜头、流畅跟随、沉浸式", emo: "流畅、沉浸、优雅" },
+    { name: "摇臂升降", en: "Crane", feel: "场面/史诗/情绪升降", use: "大场面、情绪升降、名场面", emo: "史诗、场面、震撼" },
+    { name: "航拍无人机", en: "Aerial", feel: "规模/地理/史诗", use: "大场景、地理展示、高空追逐", emo: "宏大、史诗、规模" }
+  ];
+
+  /* ---------- 10 种打光 ---------- */
+  const lightings = [
+    { name: "柔光", en: "Soft Light", light: "大面积散射光源（窗纱/柔光箱/阴天）", shadow: "阴影边缘模糊渐变，几乎无硬阴影", use: "温馨家庭、情感戏、回忆、治愈", emo: "温暖、安全、柔软" },
+    { name: "冷暖对比", en: "Color Contrast", light: "一侧冷光（霓虹/月光）+一侧暖光（台灯/夕阳）", shadow: "面部一半冷一半暖，色彩分割明显", use: "赛博朋克、都市夜景、内心挣扎", emo: "冲突、矛盾、孤独" },
+    { name: "聚光", en: "Spotlight", light: "正上方/斜上方聚光灯，光池效果", shadow: "主体明亮，周围黑暗，清晰光影边界", use: "舞台、悬疑揭示、独白、审讯", emo: "聚焦、孤独、神圣" },
+    { name: "侧光", en: "Side Light", light: "正侧面90度（窗户/台灯/门隙）", shadow: "半明半暗分割光，鼻梁投清晰阴影", use: "情绪戏、悬疑、内心挣扎", emo: "神秘、深沉、矛盾" },
+    { name: "硬光", en: "Hard Light", light: "直射阳光/无罩灯泡，方向锐利", shadow: "阴影边缘如刀割，明暗对比极高", use: "动作戏、打斗、男性力量感", emo: "力量、紧张、危险" },
+    { name: "底光", en: "Under Light", light: "从下方往上打（篝火/屏幕/手电朝上）", shadow: "光影颠倒，额头颧骨陷入阴影", use: "恐怖、诡异、反派登场", emo: "诡异、恐怖、邪恶" },
+    { name: "逆光", en: "Backlight", light: "人物正后方光源（夕阳/窗户/路灯）", shadow: "勾勒轮廓光，面部较暗成剪影", use: "浪漫、告别、英雄、神秘", emo: "神圣、浪漫、悲壮" },
+    { name: "蝴蝶光", en: "Butterfly", light: "正上方稍前，鼻下蝴蝶形阴影", shadow: "鼻下小蝴蝶阴影，脸颊有柔和高光", use: "女性人像、明星、唯美特写", emo: "优雅、精致、美丽" },
+    { name: "顶光", en: "Top Light", light: "正上方垂直打下", shadow: "眼窝鼻底下颌深阴影", use: "压抑、审讯、戏剧化", emo: "压抑、神圣、审判" },
+    { name: "丁达尔光", en: "Tyndall", light: "光穿过尘埃/雾形成可见光束", shadow: "体积光束，明暗层次丰富", use: "教堂、森林、神圣场景、希望", emo: "神圣、希望、治愈" }
+  ];
+
+  /* ---------- 5 类付费卡点 ---------- */
+  const cliffhangers = [
+    { name: "信息差钩子", visual: "已知者面部占满画面，被揭露对象半身从边缘滑入停在1/3处保持模糊", sound: "低频嗡鸣渐强", use: "身份揭露、秘密曝光、反转前夕" },
+    { name: "情感审判", visual: "面部占满画面，焦点从全脸缓缓收窄到眼部或嘴部", sound: "心跳声由弱渐强", use: "告白、决裂、关键台词砸出后" },
+    { name: "动作悬停", visual: "动作最高潮瞬间画面冻结，边缘缓缓压暗形成暗角", sound: "所有声音骤停，只剩环境音", use: "打斗高潮、危险降临、关键时刻" },
+    { name: "选择悬崖", visual: "画面在两人面部间快速交替，最后定格在抉择者脸上", sound: "滴答声或低频脉冲", use: "两难选择、生死抉择、关键决策" },
+    { name: "身份揭露", visual: "关键道具从一侧滑入，静止在画面正中央占1/2", sound: "清脆金属音或系统提示音", use: "身份曝光、信物出现、系统觉醒" }
+  ];
+
+  /* ---------- 音效 BGM 8 大类 ---------- */
+  const soundCats = [
+    { name: "转场音效", items: ["唰唰快速转场", "嗖——划过", "叮咚闪回", "嗡震动", "玻璃碎裂", "纸张翻页", "心跳骤停", "收音机调频", "风声", "咔嚓快门"] },
+    { name: "打脸/爽点音效", items: ["啪！清脆打脸", "咚——重物落地", "咔嚓！骨骼碎裂", "叮！金属碰撞", "轰！爆炸", "嗖！破空", "嗡！气场", "铮！出鞘", "砰！关门", "咻！甩头"] },
+    { name: "悬疑/恐怖音效", items: ["低频嗡鸣", "心跳声", "门吱呀", "脚步回声", "婴儿啼哭", "水滴声", "风声呜咽", "电话忙音", "呼吸声", "钟摆滴答"] },
+    { name: "情感/煽情音效", items: ["钢琴单音", "弦乐渐强", "雨声", "时钟声", "回忆闪回音", "心跳放缓", "叹息声", "风声", "水滴", "留白静音"] },
+    { name: "动作/打斗音效", items: ["拳头破空", "击打闷响", "骨骼碎裂", "武器碰撞", "落地翻滚", "冲刺脚步声", "撞击墙面", "摔碎声", "金属摩擦", "关节扭转"] },
+    { name: "环境/氛围音效", items: ["城市车流", "雨声", "风声", "鸟鸣", "蝉鸣", "夜市喧闹", "办公室键盘", "校园铃声", "海浪", "雷声"] },
+    { name: "UI/提示音效", items: ["系统提示音", "消息推送", "倒计时滴答", "升级音效", "打勾确认音", "警告音", "支付成功", "登录音效", "扫描音", "加载音"] },
+    { name: "BGM背景音乐", items: ["紧张悬疑", "欢快轻松", "悲伤煽情", "燃向热血", "治愈温暖", "史诗宏大", "俏皮搞怪", "都市时尚", "古风悠扬", "科幻未来"] }
+  ];
+
+  /* ---------- 7/8 镜拆解公式 ---------- */
+  const shotFormula = {
+    7: [
+      { no: 1, fn: "钩子镜", scene: "钩子场", size: ["面部特写", "近景"], move: "快速切入/定格", task: "1秒抓注意力，承接悬念或开场冲突" },
+      { no: 2, fn: "推进镜A", scene: "推进场", size: ["近景", "中景"], move: "跟随/平移", task: "冲突启动，信息铺垫" },
+      { no: 3, fn: "推进镜B", scene: "推进场", size: ["中景", "近景"], move: "交替切换", task: "冲突升级，矛盾激化" },
+      { no: 4, fn: "推进镜C", scene: "推进场", size: ["近景", "面部特写"], move: "缓慢接近", task: "冲突逼近临界点" },
+      { no: 5, fn: "爆点镜A", scene: "爆点场", size: ["面部特写"], move: "快速切换/震动", task: "第一个爆点，情绪爆发" },
+      { no: 6, fn: "爆点镜B", scene: "爆点场", size: ["面部特写", "近景"], move: "定格/慢动作", task: "第二个爆点，动作高潮" },
+      { no: 7, fn: "卡点镜", scene: "结尾", size: ["面部特写"], move: "定格收尾/压暗", task: "定格收尾，付费卡点" }
+    ],
+    8: [
+      { no: 1, fn: "钩子镜", scene: "钩子场", size: ["面部特写", "近景"], move: "快速切入", task: "1秒抓注意力" },
+      { no: 2, fn: "推进镜A", scene: "推进场", size: ["近景", "中景"], move: "跟随", task: "冲突启动，信息铺垫" },
+      { no: 3, fn: "推进镜B", scene: "推进场", size: ["中景", "近景"], move: "平移", task: "冲突升级" },
+      { no: 4, fn: "推进镜C", scene: "推进场", size: ["近景", "面部特写"], move: "缓慢接近", task: "冲突逼近临界点" },
+      { no: 5, fn: "爆点镜A", scene: "爆点场", size: ["面部特写"], move: "快速切换", task: "第一个爆点" },
+      { no: 6, fn: "爆点镜B", scene: "爆点场", size: ["中景", "近景"], move: "动作跟随", task: "第二个爆点，动作高潮" },
+      { no: 7, fn: "爆点镜C", scene: "爆点场", size: ["面部特写"], move: "定格", task: "第三个爆点，金句输出" },
+      { no: 8, fn: "卡点镜", scene: "结尾", size: ["面部特写", "道具特写"], move: "定格收尾", task: "定格收尾，付费卡点" }
+    ]
+  };
+
+  /* ---------- 运镜方式 ---------- */
+  const movements = ["固定镜头", "缓慢推镜", "缓慢拉镜", "摇镜", "平移", "跟拍", "环绕", "快速切换", "手持晃动", "定格", "慢动作", "希区柯克变焦"];
+
+  /* ---------- 五阶段情绪曲线 ---------- */
+  const emotionArc = [
+    { stage: "激励事件", desc: "打破平静，情绪起跳", shot: "镜1 钩子镜", task: "第一帧直接砸冲突/反常/悬念" },
+    { stage: "进展纠葛", desc: "事与愿违，阻碍升级", shot: "镜2-4 推进镜", task: "每镜一个事与愿违，景别中→近→特递进" },
+    { stage: "危机", desc: "情绪压到最低，绝境", shot: "镜4尾-5首", task: "主角陷入绝境，暗调光影+静止停顿" },
+    { stage: "高潮", desc: "冲突释放，情绪峰值", shot: "镜5-7 爆点镜", task: "主角主动选择→反击→金句砸出" },
+    { stage: "结尾", desc: "留悬念+引发思考", shot: "镜8 卡点镜", task: "卡点+主题余韵，停在开口前一帧" }
+  ];
+
+  /* ---------- 金句字幕特效 ---------- */
+  const goldenEffects = [
+    { name: "红色炸裂", scene: "攻击、反击、打脸、狠话" },
+    { name: "白色闪烁", scene: "身份反转、真相揭露、震撼" },
+    { name: "金色闪耀", scene: "系统提示、能力觉醒、升级" },
+    { name: "黄色警告", scene: "危机降临、危险警告、倒计时" },
+    { name: "黑色渐隐", scene: "绝望、死亡、重大失败" }
+  ];
+
+  /* ---------- 梗概解析词典 ---------- */
+  const parseDict = {
+    era: [
+      { k: ["1996", "1997", "九六", "九七", "香港", "港岛", "维多利亚"], v: "1996年香港", scene: "中环写字楼·旧式茶餐厅·霓虹街景" },
+      { k: ["八零", "80年代", "1980", "改革开放", "知青", "供销社"], v: "1980年代", scene: "筒子楼·国营厂·田间土路" },
+      { k: ["九零", "90年代", "1990", "下海", "万元户"], v: "1990年代", scene: "歌舞厅·批发市场·家属院" },
+      { k: ["古代", "皇宫", "深宫", "朝堂", "王爷", "皇帝", "妃"], v: "古代王朝", scene: "宫殿·庭院·书房" },
+      { k: ["仙侠", "修仙", "宗门", "渡劫", "仙"], v: "仙侠世界", scene: "云海仙山·宗门大殿·秘境" },
+      { k: ["末世", "丧尸", "灾变", "废土", "病毒"], v: "末世废土", scene: "废墟街道·避难所·荒野" },
+      { k: ["赛博", "未来", "星际", "2077", "机械"], v: "未来科幻", scene: "霓虹都市·飞行器·全息空间" },
+      { k: ["校园", "学校", "高考", "班级", "同学"], v: "校园", scene: "教室·操场·图书馆" },
+      { k: ["职场", "公司", "办公室", "职场", "甲方"], v: "现代职场", scene: "写字楼·会议室·格子间" },
+      { k: ["豪门", "总裁", "别墅", "家族", "财阀"], v: "现代豪门", scene: "奢华别墅·宴会厅·总裁办公室" }
+    ],
+    finger: [
+      { k: ["穿越", "穿书"], v: "穿越者", power: "掌握未来信息，能预知走势与结果" },
+      { k: ["重生"], v: "重生者", power: "带着前世记忆重新布局" },
+      { k: ["系统"], v: "系统持有者", power: "拥有系统面板与任务奖励" },
+      { k: ["异能", "觉醒", "超能力"], v: "异能觉醒者", power: "掌握超越常理的特殊能力" },
+      { k: ["医", "神医", "针灸"], v: "神医传人", power: "医术通神，能起死回生" },
+      { k: ["战神", "兵王", "特种兵"], v: "退役战神", power: "战斗力碾压，身手绝顶" },
+      { k: ["鉴宝", "古董", "赌石"], v: "鉴宝大师", power: "一双慧眼能辨真伪" },
+      { k: ["股", "操盘", "金融", "投资"], v: "金融操盘手", power: "精通资本运作与市场规律" }
+    ],
+    stake: [
+      { k: ["负债", "欠债", "高利贷", "破产"], v: "巨额债务压身，随时可能家破人亡" },
+      { k: ["退婚", "羞辱", "打压", "看不起"], v: "被当众羞辱，尊严扫地" },
+      { k: ["追杀", "危险", "生死"], v: "生死一线，随时可能丧命" },
+      { k: ["背叛", "陷害", "污蔑"], v: "被至信之人背叛陷害" },
+      { k: ["病", "绝症", "瘫痪"], v: "身体残缺，命不久矣" }
+    ]
+  };
+
+  /* ---------- 题材画面动作库（四阶段 · 画面语言） ---------- */
+  const genreActions = {
+    "逆袭打脸": {
+      hook: ["被人当众一巴掌扇得偏过头去，缓缓转回，嘴角渗血却笑了", "一叠催债单甩在脸上，纸页在空中散开飘落"],
+      push: ["在满屋嘲笑声中低头收拾残局，手指关节捏得发白", "对手跷着腿坐在主位，指尖一下下敲击桌面"],
+      boom: ["抬手将合同撕成两半，碎片纷纷扬扬落了一地", "一拳砸在桌上，杯盏齐震，全场瞬间安静"],
+      cliff: ["从怀里缓缓抽出一封文件，停在对方看清标题的那一瞬"]
+    },
+    "甜宠情感": {
+      hook: ["手指无意间触到对方手背，两人同时僵住，眼神撞在一起", "一场大雨把两个人困在同一把伞下，肩膀紧紧贴着"],
+      push: ["隔着人群远远望向对方，却在视线相碰时慌乱移开", "想说的话在嘴边转了三圈，最终只化成一句「没事」"],
+      boom: ["被一把拉进怀里，额头抵在对方肩上，呼吸乱了节奏", "在所有人面前挡在前头，声音不大却字字清晰"],
+      cliff: ["手指刚要触到对方的脸，画面定格在指尖悬停的瞬间"]
+    },
+    "虐恋追妻": {
+      hook: ["一纸离婚协议推到桌中央，指尖压在上面微微发抖", "转身离开的背影与身后的挽留形成一道无法跨越的门"],
+      push: ["在雨里站了整夜，手里攥着那件没送出去的外套", "翻到旧照片时手指停顿，眼底的光一点点暗下去"],
+      boom: ["双膝跪地抓住衣角，声音哑得不成样子", "把所有的委屈一次性吼出来，眼眶通红却不肯落泪"],
+      cliff: ["手停在门把手上，门内传来一句「你还要走吗」"]
+    },
+    "悬疑解谜": {
+      hook: ["手电光扫过黑暗角落，照亮一只伸出的手", "墙上的照片被一张张划掉，只剩最后一张"],
+      push: ["把线索铺满整面墙，红线在两点之间绷紧", "在监控死角里发现一枚不该出现的指纹"],
+      boom: ["掀开白布的那一刻，所有人的呼吸同时停住", "把证据甩在桌上，一字一顿说出真凶的名字"],
+      cliff: ["镜头缓缓推向门缝里透出的那道光，里面有人在笑"]
+    },
+    "生存压迫": {
+      hook: ["物资箱被撬开，里面只剩最后一瓶水", "远处传来嘶吼，所有人瞬间熄灭光源屏住呼吸"],
+      push: ["在废墟里翻找可用物资，手指被铁皮划破", "队伍里有人开始私藏食物，眼神躲闪"],
+      boom: ["举起铁棍砸向逼近的黑影，动作干脆利落", "一把将同伴拽回墙后，自己挡在前面"],
+      cliff: ["安全门即将关闭，门外还有一只手在拍打"]
+    },
+    "竞技淘汰": {
+      hook: ["倒计时数字跳到零，全场同时冲出起跑线", "系统播报音响起：「本轮淘汰一人」"],
+      push: ["在障碍前摔倒，手掌擦出血痕又立刻爬起", "对手在身后紧咬不放，距离一点点缩短"],
+      boom: ["在最后一秒反超，冲线时狠狠挥拳", "利用规则漏洞完成反杀，全场哗然"],
+      cliff: ["系统面板弹出「隐藏关卡」，进度条开始加载"]
+    },
+    "豪门权谋": {
+      hook: ["遗嘱宣读完毕，所有人的目光同时转向角落里的人", "一杯红酒泼在礼服上，笑容却没有一丝变化"],
+      push: ["在牌桌下悄悄交换了一个眼神，面上不动声色", "深夜书房里翻开账本，指尖停在某一行"],
+      boom: ["把证据投屏到宴会大屏，全场哗然", "当众揭穿对方底牌，声音平静却字字诛心"],
+      cliff: ["一份亲子鉴定书缓缓滑到桌面中央"]
+    },
+    "能力成长": {
+      hook: ["掌心亮起一道从未见过的光，瞳孔骤然收缩", "系统提示音响起：「恭喜觉醒」"],
+      push: ["反复练习同一个动作，汗水砸在地上", "被同门嘲笑资质平庸，沉默着把拳头攥紧"],
+      boom: ["一击击穿试炼石，数值爆表，全场死寂", "越级挑战，一招制敌，衣袍猎猎作响"],
+      cliff: ["天空裂开一道缝，深处有什么东西睁开了眼"]
+    },
+    "玄幻修仙": {
+      hook: ["丹田处灵气翻涌，周身落叶无风自动", "一柄残剑从剑冢中自行飞出，落在掌心"],
+      push: ["在洞府中闭关七日，眉心凝出一点金光", "被长老当众判定为废材，转身走向后山"],
+      boom: ["剑光冲天而起，斩断山巅，威压扫落众人", "渡劫雷光中浴火重生，气息暴涨三倍"],
+      cliff: ["天空降下一道金旨，上面写着一个不该出现的名字"]
+    },
+    "古装权谋": {
+      hook: ["诏书宣读完毕，殿内落针可闻", "一杯毒酒推到面前，指尖轻轻叩了叩杯沿"],
+      push: ["在烛火下展开密信，眉头一点点锁紧", "朝堂上当众被弹劾，跪在中央一言不发"],
+      boom: ["呈上密折，一条条罪状念出，满朝变色", "掀开帘幕走出，露出本该已死之人的脸"],
+      cliff: ["玉玺缓缓落下，只差最后一寸"]
+    },
+    "末世科幻": {
+      hook: ["天空裂开紫色裂隙，警报响彻全城", "第一只变异体从地下通道爬出"],
+      push: ["在废弃超市里搜集物资，警惕地回头张望", "同伴的体温越来越低，伤口开始异变"],
+      boom: ["能量炮亮起，一炮轰平整条街道", "异能全开，周身浮起蓝色电弧"],
+      cliff: ["通讯器里传来一句：「你不是唯一的觉醒者」"]
+    },
+    "无限流": {
+      hook: ["再睁眼已身处陌生房间，墙上写着第一条规则", "系统面板浮现：「副本开始，存活率 3%」"],
+      push: ["对照规则逐条验证，在纸上画出逻辑树", "有人违反规则，当场以诡异姿态消失"],
+      boom: ["在最后十秒说出规则漏洞，副本崩解", "拿通关奖励时，面板跳出隐藏成就"],
+      cliff: ["新副本的传送门打开，门后传来熟悉的声音"]
+    },
+    "规则怪谈": {
+      hook: ["门口贴着一张纸条：「晚上十点后不要回应敲门声」", "走廊尽头的灯开始以固定频率闪烁"],
+      push: ["一字一句核对守则，指节因用力而泛白", "楼道里传来脚步声，停在门口没有离开"],
+      boom: ["把写满规则的纸贴在门上，门外的东西退开了", "当众念出第零条规则，所有人脸色煞白"],
+      cliff: ["门缝下塞进来一张纸条，上面写着自己的名字"]
+    },
+    "萌宝奶爸": {
+      hook: ["小家伙抱着大腿仰头喊爸爸，眼睛亮得像星星", "孩子把画的全家福举到面前，上面多了一个人"],
+      push: ["手忙脚乱冲奶粉，被娃嫌弃地推开勺子", "幼儿园家长会上被其他家长指指点点"],
+      boom: ["娃当众背出超纲古诗，全场家长傻眼", "一把将孩子护在身后，眼神冷了下来"],
+      cliff: ["孩子指着远处的男人问：「爸爸，那是谁呀」"]
+    },
+    "年代文": {
+      hook: ["睁眼回到三十年前，墙上日历红得刺眼", "一封招工通知书递到手里，手微微发抖"],
+      push: ["蹬着三轮车走街串巷叫卖，嗓子喊哑", "第一笔收入攥在手心，数了三遍"],
+      boom: ["第一批货全城卖空，排队的人堵了整条街", "当众拿出订单，把质疑者噎得说不出话"],
+      cliff: ["门口停了一辆小轿车，下来的人喊出了那个名字"]
+    },
+    "职场逆袭": {
+      hook: ["方案被当众摔在地上，纸页散了一地", "邮件弹出：「本项目由他人接手」"],
+      push: ["加班到深夜改第 17 版，显示器映着疲惫的脸", "会议室里被当众质疑资历，安静听完"],
+      boom: ["把完整方案投上大屏，数据一条条打脸", "客户当场拍板签约，全场目光转向这边"],
+      cliff: ["人事通知弹出：「关于你的晋升决议——」"]
+    },
+    "校园青春": {
+      hook: ["试卷发下来，分数栏被红笔圈住，周围一片抽气声", "篮球砸到脚边，抬头撞上一双笑着的眼睛"],
+      push: ["在图书馆刷题到闭馆，笔尖磨出茧", "被嘲笑是吊车尾，把耳机音量调到最大"],
+      boom: ["竞赛最后一题压哨解出，全场起立", "在领奖台上说出那句准备了三年的话"],
+      cliff: ["桌洞里多出一封信，落款是一个熟悉的名字"]
+    }
+  };
+
+  /* ---------- 通用兜底动作库 ---------- */
+  const fallbackActions = {
+    hook: ["突如其来的变故打破了平静，眼神在一瞬间收紧", "一个关键信息砸到面前，呼吸骤然停滞"],
+    push: ["应对反而让局面更糟，新的阻碍接踵而至", "在压力中咬牙坚持，指节因用力而泛白"],
+    boom: ["主动做出关键选择，一举扭转局面", "压抑已久的情绪终于爆发，一击定胜负"],
+    cliff: ["底牌刚亮出一角，画面停在最关键的一瞬", "手指停在即将触碰到真相的最后一厘米"]
+  };
+
+  /* ---------- 通用动作变体库（与题材库拼接，保证同集内镜头不重复） ---------- */
+  const genericActions = {
+    hook: ["骤然遭遇变故，瞳孔猛地收缩，手指下意识攥紧", "关键信息当头砸下，呼吸停滞了一瞬", "被逼到墙角，退无可退，反而笑了"],
+    push: ["局面越收越紧，退路一条条被堵死", "试图破局，却引来更大的麻烦", "在沉默中盘算，眼神一点点冷下来", "被人当面质疑，只平静地听完每个字"],
+    boom: ["主动出击，一击扭转整个局面", "压抑已久的力量终于爆发，气势全开", "亮出底牌，全场目光瞬间聚焦过来", "一句话砸出，让所有质疑者哑口无言"],
+    cliff: ["动作停在最后一厘米，画面就此凝固", "真相即将揭晓的前一瞬，空气彻底静止", "手指停在门把手上，门内传来一句问话"]
+  };
+
+  /* ---------- 金句库（按情绪阶段） ---------- */
+  const goldenLines = {
+    hook: [
+      "「你以为，我还会像以前一样任你拿捏？」",
+      "「这笔账，我们今天就好好算一算。」",
+      "「既然你们不想让我好过，那就谁都别好过。」",
+      "「从这一秒开始，游戏换了玩法。」"
+    ],
+    push: [
+      "「越是这样，我越不可能退。」",
+      "「你可以不信我，但你很快就会看到结果。」",
+      "「这点手段，还不够看。」",
+      "「急什么，好戏才刚开始。」"
+    ],
+    boom: [
+      "「从今天起，规则由我来定。」",
+      "「我说过的话，从来都算数。」",
+      "「现在，轮到你们了。」",
+      "「你们欠我的，该还了。」"
+    ],
+    cliff: [
+      "「你确定，要听这个答案吗？」",
+      "「接下来发生的事，可能会改变一切。」",
+      "「还有最后一件事，你大概猜不到。」",
+      "「别急，真正的好戏在后面。」"
+    ]
+  };
+
+  /* ---------- 镜头时长与转场 ---------- */
+  const shotDurations = { 7: [5, 10, 10, 10, 10, 10, 8], 8: [5, 10, 10, 10, 8, 10, 10, 8] };
+  const transitions = ["硬切", "快速推镜转场", "闪白", "匹配剪辑", "音效桥接"];
+
+  /* ---------- 流水线阶段定义 ---------- */
+  const pipeline = [
+    { key: "parse", icon: "🔍", name: "解析梗概", desc: "提取时代背景、金手指、核心冲突" },
+    { key: "outline", icon: "📺", name: "分集规划", desc: "按四幕结构生成分集大纲" },
+    { key: "char", icon: "👥", name: "角色设定", desc: "建立角色真值档案" },
+    { key: "script", icon: "📜", name: "剧本创作", desc: "画面化剧本，写动作不写心理" },
+    { key: "board", icon: "🎞️", name: "分镜拆解", desc: "按情绪曲线拆镜并配参数" },
+    { key: "prompt", icon: "✨", name: "提示词生成", desc: "套用模型内核模板" },
+    { key: "done", icon: "🎉", name: "完成", desc: "成果总览，可复制可导出" }
+  ];
+
+  /* ---------- 可视化配色 ---------- */
+  const palette = {
+    emoArc: ["#7c5cff", "#4f8cff", "#2ec5a8", "#ffb020", "#ff5a5f"],
+    size: { "特写": "#ff5a5f", "大特写": "#ff8a3d", "近景": "#ffb020", "中景": "#2ec5a8", "中近景": "#4f8cff", "全景": "#7c5cff", "中全景": "#a06bff", "大远景": "#5b6b8c" }
+  };
+
+  return {
+    genres, styles, templates, shotSizes, cameraAngles, lightings,
+    cliffhangers, soundCats, shotFormula, movements, emotionArc, goldenEffects,
+    parseDict, genreActions, fallbackActions, genericActions, goldenLines, shotDurations, transitions,
+    pipeline, palette
+  };
+})();
+
+</script>
+  <script>
+/* ============================================================
+ * 短剧全链条大师 · 生成引擎
+ * 把技能方法论编码为规则引擎：梗概解析 → 分集 → 角色 → 剧本 → 分镜 → 提示词
+ * 核心原则：内容必须是「画面语言」，可直投 AI 视频模型
+ * ============================================================ */
+window.GEN = (function () {
+  const KB = window.KB;
+
+  /* ---------- 基础取值 ---------- */
+  function getGenre(name) { return KB.genres.find(g => g.name === name) || KB.genres[0]; }
+  function getStyle(id) { return KB.styles.find(s => s.id === id) || KB.styles[0]; }
+  function getTemplate(id) { return KB.templates.find(t => t.id === id) || null; }
+
+  function rng(seed) { let s = seed % 233280; return function () { s = (s * 9301 + 49297) % 233280; return s / 233280; }; }
+  function pick(arr, n) { return arr[((n % arr.length) + arr.length) % arr.length]; }
+
+  /* ---------- 姓名识别（常见姓氏 + 1~2 字名） ---------- */
+  const SURNAMES = "赵钱孙李周吴郑王冯陈褚卫蒋沈韩杨朱秦尤许何吕施张孔曹严华金魏陶姜戚谢邹喻柏水窦章苏潘葛范彭郎鲁韦昌马苗凤花方俞任袁柳鲍史唐费岑薛雷贺倪汤滕殷罗毕安常乐于时傅皮齐康伍余元卜顾孟平黄和穆萧尹姚邵汪祁毛禹狄米贝明臧计成戴谈宋茅庞熊纪舒屈项祝董梁杜阮蓝闵席季麻强贾路娄江童颜郭梅盛林刁钟徐邱骆高夏蔡田樊胡凌霍虞万柯管卢莫房裘缪解应宗丁宣邓郁单杭洪包诸左石崔吉钮龚程嵇邢裴陆荣翁荀羊惠甄曲家封芮储靳汲松井段富巫焦巴弓牧山谷车侯全班仰秋仲伊宫宁仇栾甘厉戎祖武符刘景詹束龙叶幸司郜黎薄印宿白怀蒲从鄂索咸籍赖卓蔺屠蒙池乔阴胥能苍双闻莘党翟贡劳姬申扶堵冉宰郦雍桑桂濮牛寿通边燕冀浦尚农温别庄晏柴瞿阎充慕连茹习宦艾鱼容向古易慎戈廖庾终居衡步都耿满弘匡国文寇广禄阙东欧沃利蔚越隆师巩聂晁冷辛阚简饶曾毋沙养鞠须丰巢关相查后荆红游权盖益桓公上官欧阳司马诸葛";
+
+  // 名字后不能紧跟这些字（"林凡穿越"→取"林凡"，而非"林凡穿"）
+  const NAME_STOP = "穿越重生回成为是在有和与就被把让带来去说想得知到过的了上下里外对着向将于从给让向让带靠替靠替当为让";
+
+  function pickName(text) {
+    const t = String(text || "");
+    // 1. 显式「名叫X」「主角X」
+    let m = t.match(/(?:名叫|名为|主角|男主|女主)\s*([一-龥]{2,4})/);
+    if (m) return m[1];
+    // 2. 姓氏 + 1~2 字（遇到停用字则只取 1 字）
+    for (let i = 0; i < t.length - 1; i++) {
+      const c = t[i];
+      if (SURNAMES.indexOf(c) >= 0) {
+        const rest = t.slice(i + 1, i + 3);
+        const m2 = rest.match(/^([一-龥])([一-龥])/);
+        if (m2 && NAME_STOP.indexOf(m2[2]) < 0) return c + m2[1] + m2[2];
+        const m1 = rest.match(/^([一-龥])/);
+        if (m1) return c + m1[1];
+      }
+    }
+    return "";
+  }
+
+  /* ---------- 0. 梗概解析 ---------- */
+  function parsePremise(text) {
+    const t = String(text || "");
+    const hit = (dict) => { for (const d of dict) { if (d.k.some(k => t.indexOf(k) >= 0)) return d; } return null; };
+    return {
+      raw: t,
+      era: hit(KB.parseDict.era),
+      finger: hit(KB.parseDict.finger),
+      stake: hit(KB.parseDict.stake),
+      name: pickName(t)
+    };
+  }
+
+  /* ---------- 角色姓名生成（避免占位名 反派/女主/配角 直出） ---------- */
+  const GIVEN_M = ["然", "逸", "辰", "宇", "泽", "昊", "睿", "轩", "霖", "珩", "舟", "骁", "峥", "珏", "澈", "曜", "屿", "砚", "璟", "骁"];
+  const GIVEN_F = ["晚", "清", "瑶", "婉", "萱", "汐", "宁", "昭", "棠", "芷", "璃", "筠", "珞", "冉", "婳", "绾", "晗", "笙", "薇", "妍"];
+
+  /* 女频题材：这些题材主角默认是女性，梗概里没写性别时不能再默认成男 */
+  const FEMALE_GENRES = ["甜宠情感", "虐恋情深", "萌宝天降", "家庭伦理", "都市言情", "古风言情"];
+  const MALE_GENRES = ["战神归来", "赘婿逆袭", "末世科幻"];
+
+  // 推断主角性别：梗概关键词优先 → 题材兜底 → 默认男
+  function detectGender(raw, genre) {
+    if (/她|女主|女王|女帝|皇后|公主|妃|妻|夫人|姐妹|母|少女|姑娘|女神|女扮|女配|女强|白莲|妹|妇/.test(raw)) return "女";
+    if (/男主|王爷|皇帝|少东家|少爷|公子|夫君|陛下|兄长|父|总裁|少东/.test(raw)) return "男";
+    if (genre && FEMALE_GENRES.indexOf(genre) >= 0) return "女";
+    if (genre && MALE_GENRES.indexOf(genre) >= 0) return "男";
+    return "男";
+  }
+  function genName(surname, isFemale, seedInt) {
+    const pool = isFemale ? GIVEN_F : GIVEN_M;
+    const r = rng(seedInt);
+    const len = r() < 0.5 ? 1 : 2;
+    let g = "";
+    for (let k = 0; k < len; k++) g += pool[Math.floor(r() * pool.length)];
+    return surname + g;
+  }
+  function genCharName(isFemale, seedInt, heroSurname) {
+    const r = rng(seedInt);
+    let sur, guard = 0;
+    do { sur = SURNAMES[Math.floor(r() * SURNAMES.length)]; guard++; } while (sur === heroSurname && guard < 20);
+    return genName(sur, isFemale, seedInt + 7);
+  }
+
+  /* ---------- 1. 角色设定 ---------- */
+  function genCharacters(project) {
+    const m = project.meta;
+    const info = parsePremise(m.premise);
+    const heroName = info.name || "主角";
+    const heroSurname = heroName.length > 1 ? heroName[0] : "";
+    const heroGender = detectGender(info.raw, m.genre);
+    const eraLook = info.era ? info.era.v : "现代都市";
+    const fingerTag = info.finger ? info.finger.v : "隐藏大佬";
+    const loveGender = heroGender === "女" ? "男" : "女";
+    const seedBase = (project.meta.premise || "").length * 131 + (info.name ? info.name.length : 3);
+    const villName = genCharName(false, seedBase + 11, heroSurname);
+    const loveName = genCharName(loveGender === "女", seedBase + 23, heroSurname);
+    const helperName = genCharName(false, seedBase + 37, heroSurname);
+    return [
+      { name: heroName, identity: fingerTag || "隐藏大佬", role: "主角", goal: "逆袭翻身，让所有人刮目相看", weakness: "身份尚未暴露，底牌有限", look: `青年${heroGender === "女" ? "女性" : "男性"}，${eraLook}装束，眼神坚定隐忍`, tag: "hero" },
+      { name: villName, identity: "打压者", role: "反派", goal: "压制主角，维持既有格局", weakness: "轻敌自负，信息落后", look: `中年男性，${eraLook}正装，笑容虚伪`, tag: "villain" },
+      { name: loveName, identity: "关键关系人", role: "女主", goal: "在立场与情感间抉择", weakness: "受制于家族", look: `青年${loveGender === "女" ? "女性" : "男性"}，${eraLook}服饰，气质清冷`, tag: "love" },
+      { name: helperName, identity: "助力", role: "配角", goal: "辅助主角，提供关键信息", weakness: "能力有限", look: `朴实可靠，${eraLook}打扮`, tag: "helper" }
+    ];
+  }
+
+  /* ---------- 2. 分集大纲（四幕结构） ---------- */
+  const ACTS = [
+    { name: "开局", to: 0.15, goal: "立住困境与金手指，第一次小胜" },
+    { name: "发展", to: 0.55, goal: "连续打脸，阻碍逐级升级" },
+    { name: "转折", to: 0.82, goal: "危机爆发，跌入谷底" },
+    { name: "高潮", to: 1.01, goal: "全面反击，真相大白" }
+  ];
+  function actOf(i, total) {
+    const p = i / total;
+    for (const a of ACTS) if (p < a.to) return a;
+    return ACTS[ACTS.length - 1];
+  }
+
+  function genEpisodes(project) {
+    const m = project.meta, g = getGenre(m.genre);
+    const info = parsePremise(m.premise);
+    const total = Math.max(1, m.episodes || 20);
+    const hero = info.name || "主角";
+    const env = info.era ? info.era.scene : "核心场景";
+    const power = info.finger ? info.finger.power : "过人本事";
+    const stake = info.stake ? info.stake.v : "处境艰难";
+    const cliffNames = KB.cliffhangers.map(c => c.name);
+    const eps = [];
+
+    for (let i = 1; i <= total; i++) {
+      const a = actOf(i, total);
+      const rand = rng(i * 977 + (info.name ? info.name.length : 3));
+      const cliff = pick(cliffNames, i + Math.floor(rand() * 3));
+      let conflict, highlight;
+      if (a.name === "开局") {
+        conflict = `${hero}因${stake}被逼到墙角，在${env}遭遇第一轮正面打压。`;
+        highlight = `${hero}第一次动用「${power}」，当众小胜一局，让嘲笑者闭嘴。`;
+      } else if (a.name === "发展") {
+        conflict = `对手加码施压，${hero}的每一步都被提前算死，${env}里的局面越收越紧。`;
+        highlight = `${hero}用${power}反将一军，打脸来得又快又狠，围观者倒吸一口凉气。`;
+      } else if (a.name === "转折") {
+        conflict = `底牌被人识破，${hero}失去所有依仗，跌落谷底，连身边人也开始动摇。`;
+        highlight = `绝境中${hero}硬扛住最后一击，保住翻身的火种，眼神反而更亮了。`;
+      } else {
+        conflict = `最终对决在${env}展开，对方亮出全部底牌，胜负只在一线之间。`;
+        highlight = `${hero}全面反击，${power}全开，真相当众揭开，格局彻底改写。`;
+      }
+      eps.push({
+        index: i, act: a.name,
+        title: `${a.name}·${g.name.slice(0, 2)}第${i}击`,
+        conflict, highlight,
+        cliffhanger: `${cliff}——停在「开口/出手前一帧」，把结果留给下一集。`
+      });
+    }
+    return eps;
+  }
+
+  /* ---------- 3. 剧本（每集不同） ---------- */
+  /* 题材动作 + 通用动作变体，保证同一集内镜头内容不重复 */
+  function actionsOf(genreName, stage) {
+    const a = KB.genreActions[genreName] || KB.fallbackActions;
+    const g = KB.genericActions[stage] || [];
+    return (a[stage] || KB.fallbackActions[stage] || []).concat(g);
+  }
+
+  /* 画面描述语法适配：动作以谓语开头则直接接主角名，否则独立成句 */
+  const PRED_START = /^(被|把|将|抬|一拳|双膝|在|从|翻|举|拿|站|手|睁|低|握|攥|咬|冲|蹬|加班|反复|一字|对照|穿过|转|走|回|蹲|跪|背|侧|攥着|闭)/;
+  function withHero(hero, act) {
+    return PRED_START.test(act) ? hero + act : act + "，" + hero + "处在画面正中";
+  }
+
+  function genScript(project) {
+    const m = project.meta;
+    const chars = project.characters || [];
+    const info = parsePremise(m.premise);
+    const hero = heroName(chars);
+    const villain = villainName(chars);
+    const env = info.era ? info.era.scene.split("·")[0] : "核心场景";
+    const scripts = [];
+
+    for (const ep of (project.episodes || [])) {
+      // 种子错开：原来 ep*31 与长度 4/5 的动作库取模，会导致每 4~5 集整轮重复
+      const seed = ep.index * 37;
+      const hookAct = pick(actionsOf(m.genre, "hook"), seed);
+      const pushAct = pick(actionsOf(m.genre, "push"), seed + 11);
+      const boomAct = pick(actionsOf(m.genre, "boom"), seed + 23);
+      const cliffAct = pick(actionsOf(m.genre, "cliff"), seed + 29);
+      const line1 = pick(KB.goldenLines.hook, seed);
+      const line2 = pick(KB.goldenLines.push, seed + 11);
+      const line3 = pick(KB.goldenLines.boom, seed + 23);
+      const line4 = pick(KB.goldenLines.cliff, seed + 29);
+
+      // speaker 与 dialogue 分开存：提示词的朗读区只能放纯台词，
+      // 角色名要放在朗读区外面，否则 TTS 会把名字一起念出来（Seedance 铁律5/51）
+      scripts.push({
+        ep: ep.index,
+        scenes: [
+          { name: "钩子场", emo: "冲突爆发", desc: `${env}内，${withHero(hero, hookAct)}。${ep.conflict}`, speaker: hero, dialogue: line1 },
+          { name: "推进场", emo: "事与愿违", desc: `${withHero(hero, pushAct)}。${ep.conflict}`, speaker: villain, dialogue: line2 },
+          { name: "爆点场", emo: "情绪峰值", desc: `${withHero(hero, boomAct)}。${ep.highlight}`, speaker: hero, dialogue: line3 },
+          { name: "卡点场", emo: "悬念收尾", desc: `${withHero(hero, cliffAct)}。${ep.cliffhanger}`, speaker: villain, dialogue: line4 }
+        ]
+      });
+    }
+    return scripts;
+  }
+
+  /* ---------- 4. 分镜拆解 ---------- */
+  /* 注意：运镜里不得出现「定格」——Seedance 铁律27 / H3 铁律7 要求片内不 freeze。
+     音效必须是可听到的具体声源，不能是「金色闪耀」「BGM燃向」这类特效/配乐词。 */
+  const SHOT_REC = {
+    hook: { sizes: ["特写", "近景"], angles: ["低机位仰拍", "正面机位"], moves: ["快速切换", "快速推镜"], lights: ["冷暖对比", "侧光"], sounds: ["低频嗡鸣", "心跳声"], emo: "激励事件·打破平静", stage: "hook" },
+    push1: { sizes: ["近景", "中景"], angles: ["平拍眼平", "3/4侧面"], moves: ["跟拍", "平移"], lights: ["柔光", "侧光"], sounds: ["城市车流", "雨声"], emo: "进展纠葛·事与愿违", stage: "push" },
+    push2: { sizes: ["中景", "近景"], angles: ["平拍眼平", "过肩机位"], moves: ["平移", "缓慢推镜"], lights: ["侧光", "柔光"], sounds: ["蝉鸣", "纸张翻页"], emo: "进展纠葛·阻碍升级", stage: "push" },
+    push3: { sizes: ["近景", "特写"], angles: ["高机位俯拍", "正面机位"], moves: ["缓慢推镜", "缓慢拉镜"], lights: ["侧光", "顶光"], sounds: ["心跳声", "水滴声"], emo: "危机·情绪最低点", stage: "push" },
+    boom1: { sizes: ["特写"], angles: ["低机位仰拍", "手持肩扛"], moves: ["快速切换", "手持晃动"], lights: ["硬光", "侧光"], sounds: ["啪！清脆打脸", "拳头破空"], emo: "高潮·第一个爆点", stage: "boom" },
+    boom2: { sizes: ["中景", "近景"], angles: ["手持肩扛", "低机位仰拍"], moves: ["慢动作", "跟拍"], lights: ["硬光", "逆光"], sounds: ["击打闷响", "骨骼碎裂"], emo: "高潮·动作爆点", stage: "boom" },
+    boom3: { sizes: ["特写", "大特写"], angles: ["低机位仰拍", "正面机位"], moves: ["缓慢推镜", "固定镜头"], lights: ["逆光", "聚光"], sounds: ["呼吸声", "钟摆滴答"], emo: "高潮·金句输出", stage: "boom" },
+    cliff: { sizes: ["特写", "大特写"], angles: ["平拍眼平", "低机位仰拍"], moves: ["缓慢推镜", "固定镜头"], lights: ["逆光", "聚光"], sounds: ["低频嗡鸣渐强", "心跳声由弱渐强"], emo: "结尾·卡点+余韵", stage: "cliff" }
+  };
+
+  /* 阶段中文名 / 功能镜名（自定义镜数时不再依赖写死的 7/8 镜公式） */
+  const STAGE_CN = { hook: "钩子场", push: "推进场", boom: "爆点场", cliff: "结尾" };
+  function fnNameOf(stage, kIn) {
+    if (stage === "hook") return "钩子镜";
+    if (stage === "cliff") return "卡点镜";
+    return (stage === "push" ? "推进镜" : "爆点镜") + ["A", "B", "C"][kIn % 3];
+  }
+
+  function fnKey(fn) {
+    if (fn.indexOf("钩子") >= 0) return "hook";
+    if (fn.indexOf("推进") >= 0) { const n = fn.match(/[ABC]/); return n ? "push" + (n[0].charCodeAt(0) - 64) : "push1"; }
+    if (fn.indexOf("爆点") >= 0) { const n = fn.match(/[ABC]/); return n ? "boom" + (n[0].charCodeAt(0) - 64) : "boom1"; }
+    if (fn.indexOf("卡点") >= 0) return "cliff";
+    return "push1";
+  }
+
+  function heroName(chars) { const h = (chars || []).find(c => c.tag === "hero"); return h ? h.name : ((chars || [])[0] ? chars[0].name : "主角"); }
+  function villainName(chars) { const v = (chars || []).find(c => c.tag === "villain"); return v ? v.name : ((chars || [])[1] ? chars[1].name : "对手"); }
+
+  /* 阶段序列：7/8 镜沿用官方公式；其余任意镜数按「钩子1 + 推进≈45% + 爆点 + 卡点1」比例生成，
+     保证自定义镜数时不会退化成写死的 8 镜。 */
+  function stageSeq(n) {
+    if (KB.shotFormula[n]) return KB.shotFormula[n].map(f => fnKey(f.fn));
+    if (n <= 1) return ["hook"];
+    if (n === 2) return ["hook", "cliff"];
+    const mid = n - 2;                       // 扣掉钩子镜和卡点镜后的中间镜数
+    let nPush = Math.round(mid * 0.45);
+    if (nPush < 1) nPush = 1;                // 至少 1 镜推进
+    if (mid >= 2 && nPush > mid - 1) nPush = mid - 1;  // 给爆点至少留 1 镜
+    let nBoom = mid - nPush;
+    if (nBoom < 1) { nBoom = 1; nPush = Math.max(0, mid - 1); }
+    const seq = ["hook"];
+    for (let i = 0; i < nPush; i++) seq.push("push" + (i % 3 + 1));
+    for (let i = 0; i < nBoom; i++) seq.push("boom" + (i % 3 + 1));
+    seq.push("cliff");
+    return seq;
+  }
+
+  /* 时长表：官方只定义了 7/8 镜，自定义镜数时按「首镜5秒 / 末镜8秒 / 中间10秒」生成 */
+  function durationsFor(n) {
+    if (KB.shotDurations[n]) return KB.shotDurations[n];
+    const d = [];
+    for (let i = 0; i < n; i++) d.push(i === 0 ? 5 : (i === n - 1 ? 8 : 10));
+    return d;
+  }
+
+  function genStoryboard(project) {
+    const m = project.meta, chars = project.characters || [];
+    const info = parsePremise(m.premise);
+    const hero = heroName(chars);
+    const villain = villainName(chars);
+    const env = info.era ? info.era.scene.split("·")[0] : "核心场景";
+    // 自定义镜数：允许 3~30 镜
+    const n = Math.max(3, Math.min(30, m.shotsPerEpisode || 8));
+    const keys = stageSeq(n);
+    const durs = durationsFor(n);
+    const scriptMap = {};
+    (project.scripts || []).forEach(s => scriptMap[s.ep] = s);
+    const sceneOf = { hook: 0, push: 1, boom: 2, cliff: 3 };
+    const out = [];
+
+    for (const ep of (project.episodes || [])) {
+      const sc = scriptMap[ep.index];
+      const cliffCfg = pick(KB.cliffhangers, ep.index * 7 + 3);
+      const counter = {};   // 同阶段内第几镜 —— 用来轮转参数，避免连续几镜完全一样
+
+      const shots = keys.map((k, i) => {
+        const rec = SHOT_REC[k], stage = rec.stage;
+        const kIn = counter[stage] || 0; counter[stage] = kIn + 1;
+        const seed = ep.index * 131 + i * 17 + kIn * 7;
+
+        const pool = actionsOf(m.genre, stage);
+        const act = pool.length ? pick(pool, seed + kIn * 5) : "";
+        const scene = sc ? sc.scenes[Math.min(sceneOf[stage], sc.scenes.length - 1)] : null;
+        const who = stage === "cliff" ? villain : (stage === "push" && kIn % 2 === 1 ? villain : hero);
+
+        // 画面描述 = 剧本叙事 + 本镜具体动作。不用「悬念拉满」这类抽象情绪词（Seedance 铁律13 / H3 铁律33）
+        let desc = scene ? scene.desc.replace(/[。！？]+$/, "") : `${env}里，${withHero(who, act)}`;
+        if (scene && act) desc += `，${withHero(who, act)}`;
+        if (stage === "cliff") desc += `。${cliffCfg.visual}`;
+
+        const speaker = scene ? scene.speaker : who;
+        const dialogue = scene ? scene.dialogue : pick(KB.goldenLines[stage] || KB.goldenLines.push, seed);
+
+        return {
+          no: i + 1, fn: fnNameOf(stage, kIn), scene: STAGE_CN[stage], emo: rec.emo, stage,
+          shotSize: rec.sizes[kIn % rec.sizes.length],
+          camera: rec.angles[kIn % rec.angles.length],
+          movement: rec.moves[kIn % rec.moves.length],
+          lighting: rec.lights[kIn % rec.lights.length],
+          sound: stage === "cliff" ? cliffCfg.sound : pick(rec.sounds, seed),
+          duration: durs[i] || 10,
+          transition: i === 0 ? "开场" : pick(KB.transitions, seed),
+          desc, dialogue, speaker
+        };
+      });
+      out.push({ ep: ep.index, shots });
+    }
+    return out;
+  }
+
+  /* 运镜英译（H3 英文提示词用） */
+  const MOV_EN = {
+    "固定镜头": "static shot", "缓慢推镜": "slow push-in", "缓慢拉镜": "slow pull-out",
+    "摇镜": "pan", "平移": "tracking", "跟拍": "follow", "环绕": "orbit",
+    "快速切换": "rapid cut", "手持晃动": "handheld shake", "定格": "freeze frame",
+    "慢动作": "slow motion", "希区柯克变焦": "dolly zoom"
+  };
+  function mvEn(m) { return MOV_EN[m] || "static"; }
+  function enOf(list, name, key) { const it = list.find(x => x.name === name); return it ? it[key] : name; }
+
+  /* ---------- 5a. Seedance 三段式提示词 ---------- */
+  function genPromptSeedance(project, epIndex) {
+    const m = project.meta, chars = project.characters || [];
+    const style = getStyle(m.style);
+    const sb = (project.storyboard || []).find(s => s.ep === epIndex) || { shots: [] };
+    const ratio = m.ratio === "16:9" ? "16:9横屏" : "9:16竖屏";
+    const hero = heroName(chars);
+
+    // ① 素材声明（首行必须是 EPxx《集名》，Seedance 铁律29）
+    const ep = (project.episodes || []).find(e => e.index === epIndex);
+    const head = `EP${String(epIndex).padStart(2, "0")}《${ep ? ep.title : "第" + epIndex + "集"}》`;
+    let mat = "";
+    chars.slice(0, 3).forEach((c, i) => {
+      mat += (i === 0 ? "" : "；") + `将@图片${i + 1}中${c.look || "角色"}定义为${c.name}`;
+    });
+    mat += `；@图片${Math.min(chars.length, 3) + 1}作为场景参考。`;
+
+    // ② 全局设定
+    const global = `${style.name}，${ratio}，高清，细节丰富，电影质感，${style.prefix}；`
+      + `人物面部与服装全程稳定不变形，动作自然流畅，无卡顿无闪烁无穿模；`
+      + `保持无字幕，避免生成任何文字或字幕，不要生成 Logo 或水印；`
+      + `视频全程禁止出现外形、着装、配饰完全一致的人物，同一画面中每个角色仅出现一次，不出现人物重复复刻或分身。`;
+
+    // ③ 分镜（带时间码/时长/转场）
+    let seg = "", t = 0;
+    sb.shots.forEach((s, i) => {
+      const start = t, end = t + (s.duration || 10); t = end;
+      // 角色名必须放在 {} 朗读区之外，否则 TTS 会把名字念出来
+      const dialogue = s.dialogue ? `镜头切至${s.speaker || hero}，用普通话说道{${s.dialogue}}` : "";
+      const sound = s.sound ? `<${s.sound}>` : "";
+      const trans = i === 0 ? "" : `（${s.transition}）`;
+      const bgm = i === 0 ? "（BGM起）" : "";
+      seg += `镜头${i + 1}｜${start}-${end}秒${trans}：${s.shotSize}，${s.camera}，${s.movement}；${s.desc}${s.lighting}打光。${dialogue}${sound}${bgm}\n`;
+    });
+    seg += `\n画面自然收住在${hero}的关键瞬间。`;
+
+    return `${head}\n\n${mat}\n\n${global}\n\n${seg}`;
+  }
+
+  /* ---------- 5b. MiniMax H3 六段式提示词 ---------- */
+  function genPromptH3(project, epIndex) {
+    const m = project.meta, chars = project.characters || [];
+    const style = getStyle(m.style);
+    const sb = (project.storyboard || []).find(s => s.ep === epIndex) || { shots: [] };
+    const hero = heroName(chars);
+
+    const ep = (project.episodes || []).find(e => e.index === epIndex);
+    const ratio = m.ratio === "16:9" ? "16:9" : "9:16";
+    const head = `EP${String(epIndex).padStart(2, "0")}《${ep ? ep.title : "第" + epIndex + "集"}》`;
+
+    // ① Style
+    const styleLine = `Style: ${style.prefix}, ${ratio}, cinematic, high detail, film grain.`;
+
+    // ② Subject definitions（必须用 <Subject N> is … in <Picture N> 写法，H3 铁律43）
+    let subj = "";
+    chars.slice(0, 3).forEach((c, i) => {
+      subj += `<Subject ${i + 1}> is ${c.name} in <Picture ${i + 1}>: ${c.look || "character"}, identity lock.\n`;
+    });
+    subj += `<Scene> is the environment in <Picture ${Math.min(chars.length, 3) + 1}>: environment lock.`;
+
+    // ③ Summary
+    const summary = `Summary: episode ${epIndex} of ${m.episodes} — a ${m.genre} short drama led by ${hero}. `
+      + `The episode opens on a hook, escalates through confrontation, delivers a climax payoff, and closes on a cliffhanger.`;
+
+    // ④ Retention analysis
+    const retention = `Retention analysis: grab attention within the first second; escalate obstacles through the middle; `
+      + `pay off at the climax with a signature line; end unresolved on the cliffhanger to drive the next episode.`;
+
+    // ⑤ Detailed description（累计时间码 mm:ss.000，H3 时间码铁律）
+    let shots = "", t = 0;
+    sb.shots.forEach((s, i) => {
+      const mm = String(Math.floor(t / 60)).padStart(2, "0");
+      const ss = String(Math.floor(t) % 60).padStart(2, "0");
+      const dur = s.duration || 10;
+      t += dur;
+      const sizeEn = enOf(KB.shotSizes, s.shotSize, "abbr");
+      const angEn = enOf(KB.cameraAngles, s.camera, "en");
+      const litEn = enOf(KB.lightings, s.lighting, "en");
+      // 台词用 <d>[Chinese]…</d> 包裹，说话人放在标签外（H3 铁律21/44）
+      const speak = s.dialogue ? ` ${s.speaker || hero} speaks in Chinese <d>[Chinese]${s.dialogue}</d>` : "";
+      shots += `[Shot ${i + 1}] at ${mm}:${ss}.000 (${dur}s) — ${sizeEn} shot, ${angEn}. ${s.desc} `
+        + `Camera: ${mvEn(s.movement)}; lighting: ${litEn}.${speak}\n`;
+    });
+
+    // ⑥ Audio + Negative
+    const sound = sb.shots[0] ? sb.shots[0].sound : "ambient";
+    const audio = `overall_soundscape: ${sound}, ambient room tone.\nnon_diegetic_music: N/A`;
+    const negative = "distorted face, deformed hands, extra fingers, cloned character, duplicate person, "
+      + "text overlay, subtitle, logo, watermark, flickering, morphing, jump cut, freeze frame";
+
+    return [
+      head, "",
+      styleLine, "",
+      "Subject definitions:", subj, "",
+      summary, "",
+      retention, "",
+      "Continuity: consistent lighting across shots, stable character identity and wardrobe, seamless transitions, no duplicate figures.", "",
+      "Detailed description:", shots,
+      audio, "",
+      `Negative prompt: ${negative}`
+    ].join("\n");
+  }
+
+  /* ---------- 6. 一键全链路 ---------- */
+  function genAll(project) {
+    project.characters = genCharacters(project);
+    project.episodes = genEpisodes(project);
+    project.scripts = genScript(project);
+    project.storyboard = genStoryboard(project);
+    return project;
+  }
+
+  /* ---------- 统计 ---------- */
+  function stats(project) {
+    const sb = project.storyboard || [];
+    const totalShots = sb.reduce((n, e) => n + e.shots.length, 0);
+    const secs = sb.reduce((n, e) => n + e.shots.reduce((x, s) => x + (s.duration || 10), 0), 0);
+    const sizeCount = {};
+    sb.forEach(e => e.shots.forEach(s => { sizeCount[s.shotSize] = (sizeCount[s.shotSize] || 0) + 1; }));
+    return {
+      episodes: (project.episodes || []).length,
+      shots: totalShots,
+      seconds: secs,
+      characters: (project.characters || []).length,
+      sizeCount
+    };
+  }
+
+  return {
+    getGenre, getStyle, getTemplate, parsePremise, pickName,
+    genCharacters, genEpisodes, genScript, genStoryboard,
+    genPromptH3, genPromptSeedance, genAll, stats, heroName, villainName
+  };
+})();
+
+</script>
+  <script>
+/* ============================================================
+ * 短剧全链条大师 · 应用逻辑
+ * 一键流水线 / 进度可视化 / 图形化成果
+ * ============================================================ */
+(function () {
+  const KB = window.KB, GEN = window.GEN;
+
+  const $ = (s, el) => (el || document).querySelector(s);
+  const $$ = (s, el) => Array.from((el || document).querySelectorAll(s));
+
+  const LS_PROJECTS = "sdm_projects_v2", LS_CURRENT = "sdm_current_v1";
+
+  const state = {
+    tab: "create",
+    view: "input",            // input | running | result
+    projectId: null, project: null,
+    run: { stage: -1, pct: 0, logs: [] },
+    resultTab: "overview",    // overview | script | board | prompt
+    curEp: 1
+  };
+
+  /* ---------- 工具 ---------- */
+  function uid() { return "p_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+  function pick(arr, n) { return arr[((n % arr.length) + arr.length) % arr.length]; }
+  function toast(msg) {
+    const t = $("#toast"); t.textContent = msg; t.classList.add("show");
+    clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove("show"), 1800);
+  }
+
+  /* ---------- 存储 ---------- */
+  function loadProjects() { try { return JSON.parse(localStorage.getItem(LS_PROJECTS)) || []; } catch (e) { return []; } }
+  function saveProjects(list) { try { localStorage.setItem(LS_PROJECTS, JSON.stringify(list)); } catch (e) { toast("存储空间不足，请减少集数"); } }
+  function persist() {
+    if (!state.project) return;
+    state.project.updatedAt = Date.now();
+    const list = loadProjects();
+    const i = list.findIndex(p => p.id === state.project.id);
+    if (i >= 0) list[i] = state.project; else list.unshift(state.project);
+    saveProjects(list);
+  }
+
+  function newProject(premise) {
+    const p = {
+      id: uid(), name: "未命名短剧", updatedAt: Date.now(),
+      meta: {
+        premise: premise || "", genre: "逆袭打脸", style: "S07", model: "seedance",
+        ratio: "9:16", episodes: 12, shotsPerEpisode: 8
+      },
+      episodes: [], characters: [], scripts: [], storyboard: [], parsed: null
+    };
+    if (premise) p.name = (GEN.parsePremise(premise).name || "我的") + "的短剧";
+    const list = loadProjects(); list.unshift(p); saveProjects(list);
+    state.projectId = p.id; state.project = p;
+    localStorage.setItem(LS_CURRENT, p.id);
+    return p;
+  }
+  function openProject(id) {
+    const p = loadProjects().find(x => x.id === id);
+    if (!p) return;
+    state.projectId = id; state.project = p;
+    localStorage.setItem(LS_CURRENT, id);
+    state.view = p.storyboard && p.storyboard.length ? "result" : "input";
+    state.curEp = 1; state.resultTab = "overview";
+  }
+  function ensureProject() {
+    if (state.project) return true;
+    const cid = localStorage.getItem(LS_CURRENT);
+    const list = loadProjects();
+    const p = (cid && list.find(x => x.id === cid)) || list[0];
+    if (p) { state.projectId = p.id; state.project = p; state.view = p.storyboard && p.storyboard.length ? "result" : "input"; return true; }
+    return false;
+  }
+
+  /* ---------- 复制 / 导出 ---------- */
+  async function copyText(text) {
+    try { await navigator.clipboard.writeText(text); toast("已复制 ✓"); }
+    catch (e) {
+      const ta = document.createElement("textarea"); ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); toast("已复制 ✓"); } catch (e2) { toast("复制失败，请长按手动复制"); }
+      document.body.removeChild(ta);
+    }
+  }
+  function downloadText(filename, text) {
+    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }
+
+  /* ============================================================
+   * 渲染入口
+   * ============================================================ */
+  function render() {
+    $$("#tabbar .tab").forEach(x => x.classList.toggle("active", x.dataset.tab === state.tab));
+    const main = $("#main");
+    if (state.tab === "create") main.innerHTML = renderCreate();
+    else if (state.tab === "projects") main.innerHTML = renderProjects();
+    else if (state.tab === "knowledge") main.innerHTML = renderKnowledge();
+    else main.innerHTML = renderAbout();
+    $("#stepper").classList.add("hidden");
+    bindView();
+    window.scrollTo(0, 0);
+  }
+
+  function renderCreate() {
+    if (!state.project) return renderInput();
+    if (state.view === "running") return renderRunning();
+    if (state.view === "result") return renderResult();
+    return renderInput();
+  }
+
+  /* ============================================================
+   * ① 输入页
+   * ============================================================ */
+  const SAMPLES = [
+    { text: "2024年私募操盘手林凡穿越回1996年的香港，成为负债三千万的落魄富二代，靠未来记忆在股市绝地翻身。", genre: "逆袭打脸" },
+    { text: "苏晚重生回结婚前一天，手撕渣男与白莲继妹，转身投入暗恋自己十年的陆氏总裁怀抱。", genre: "甜宠情感" },
+    { text: "末世降临第三年，幸存者陈默在废墟中觉醒异能，带领伙伴求生并揭开灾变真相。", genre: "末世科幻" }
+  ];
+
+  function renderInput() {
+    const m = state.project ? state.project.meta : { premise: "", genre: "逆袭打脸", style: "S07", model: "seedance", ratio: "9:16", episodes: 12, shotsPerEpisode: 8 };
+    const gOpt = KB.genres.map(g => `<option ${g.name === m.genre ? "selected" : ""}>${g.name}</option>`).join("");
+    const sOpt = KB.styles.map(s => `<option value="${s.id}" ${s.id === m.style ? "selected" : ""}>${s.id} ${s.name}</option>`).join("");
+    return `
+    <div class="hero">
+      <div class="hero-title">短剧全链条大师</div>
+      <div class="hero-sub">一句话梗概 → 自动跑完全链条 → 输出可直投的 AI 视频提示词</div>
+      <div class="hero-flow">
+        ${["梗概", "分集", "角色", "剧本", "分镜", "提示词"].map((s, i) =>
+          `<span class="flow-node">${s}</span>${i < 5 ? '<span class="flow-arrow">›</span>' : ""}`).join("")}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">✍️ 故事梗概 <span class="tag gray" id="premise-count">0 字</span></div>
+      <textarea id="premise-box" class="big-input" data-edit="meta" data-field="premise"
+        placeholder="用 1-3 句话说清：谁 + 遭遇什么 + 凭什么翻盘&#10;例：2024年私募操盘手林凡穿越回1996年的香港，成为负债三千万的落魄富二代，靠未来记忆在股市绝地翻身。">${esc(m.premise)}</textarea>
+      <div class="samples">
+        ${SAMPLES.map((s, i) => `<button class="chip-sample" data-act="sample" data-i="${i}">💡 示例${i + 1}</button>`).join("")}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">⚙️ 创作配置</div>
+      <div class="grid-form">
+        <div class="field"><label>题材</label><select data-edit="meta" data-field="genre">${gOpt}</select></div>
+        <div class="field"><label>画面风格</label><select data-edit="meta" data-field="style">${sOpt}</select></div>
+        <div class="field"><label>总集数</label><input type="number" min="1" max="60" data-edit="meta" data-field="episodes" value="${m.episodes}" /></div>
+        <div class="field"><label>单集镜数 <span class="tag gray">3-30</span></label>
+          <input type="number" min="3" max="30" data-edit="meta" data-field="shotsPerEpisode" value="${m.shotsPerEpisode}" />
+        </div>
+      </div>
+      <div class="field"><label>目标模型</label>
+        <div class="seg">
+          <div class="seg-item ${m.model === "seedance" ? "active" : ""}" data-act="model" data-v="seedance">Seedance 2.5</div>
+          <div class="seg-item ${m.model === "h3" ? "active" : ""}" data-act="model" data-v="h3">MiniMax H3</div>
+        </div>
+      </div>
+      <div class="field"><label>画面比例</label>
+        <div class="seg">
+          <div class="seg-item ${m.ratio === "9:16" ? "active" : ""}" data-act="ratio" data-v="9:16">9:16 竖屏</div>
+          <div class="seg-item ${m.ratio === "16:9" ? "active" : ""}" data-act="ratio" data-v="16:9">16:9 横屏</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn big block" data-act="run">🚀 一键生成全链条</button>
+    <div class="tip">将自动完成：梗概解析 → 分集规划 → 角色设定 → 剧本创作 → 分镜拆解 → 提示词生成</div>`;
+  }
+
+  /* ============================================================
+   * ② 流水线运行页
+   * ============================================================ */
+  function renderRunning() {
+    const r = state.run;
+    const stages = KB.pipeline;
+    const R = 52, C = 2 * Math.PI * R;
+    const off = C * (1 - r.pct / 100);
+    return `
+    <div class="run-wrap">
+      <div class="ring-box">
+        <svg viewBox="0 0 120 120" class="ring">
+          <circle cx="60" cy="60" r="${R}" class="ring-bg"></circle>
+          <circle cx="60" cy="60" r="${R}" class="ring-fg" stroke-dasharray="${C}" stroke-dashoffset="${off}"></circle>
+        </svg>
+        <div class="ring-text"><b>${Math.round(r.pct)}</b><span>%</span></div>
+      </div>
+      <div class="run-now">${r.stage >= 0 && stages[r.stage] ? stages[r.stage].icon + " " + stages[r.stage].name : "准备中…"}</div>
+
+      <div class="stage-list">
+        ${stages.map((s, i) => {
+          let cls = "st";
+          if (i < r.stage) cls += " done"; else if (i === r.stage) cls += " now";
+          return `<div class="${cls}">
+            <span class="st-ico">${i < r.stage ? "✓" : s.icon}</span>
+            <span class="st-main"><b>${s.name}</b><i>${s.desc}</i></span>
+            ${i === r.stage ? '<span class="spinner"></span>' : ""}
+          </div>`;
+        }).join("")}
+      </div>
+
+      <div class="log-box">${r.logs.map(l => `<div class="log-line">${l}</div>`).join("")}</div>
+    </div>`;
+  }
+
+  function pushLog(msg) {
+    state.run.logs.push(msg);
+    const box = $(".log-box");
+    if (box) { box.innerHTML += `<div class="log-line">${msg}</div>`; box.scrollTop = box.scrollHeight; }
+  }
+
+  function runPipeline() {
+    if (!state.project) newProject("");
+    const p = state.project;
+    if (!p || !p.meta.premise.trim()) { toast("请先填写故事梗概"); const b = $("#premise-box"); if (b) b.focus(); return; }
+
+    state.view = "running";
+    state.run = { stage: -1, pct: 0, logs: [] };
+    p.episodes = []; p.scripts = []; p.storyboard = [];
+    render();
+
+    const jobs = [
+      {
+        key: "parse", run: () => {
+          p.parsed = GEN.parsePremise(p.meta.premise);
+          const i = p.parsed;
+          return [
+            `识别主角：<b>${esc(i.name || "主角")}</b>`,
+            `时代背景：<b>${i.era ? i.era.v : "未识别（默认现代都市）"}</b>`,
+            `金手指：<b>${i.finger ? i.finger.v : "未识别（默认过人本事）"}</b>`,
+            `核心危机：<b>${i.stake ? i.stake.v : "未识别（默认处境艰难）"}</b>`
+          ];
+        }
+      },
+      {
+        key: "outline", run: () => {
+          p.episodes = GEN.genEpisodes(p);
+          return [`按四幕结构（开局/发展/转折/高潮）生成 <b>${p.episodes.length}</b> 集大纲`,
+          `每集含：主冲突 + 爽点 + 集尾卡点`];
+        }
+      },
+      {
+        key: "char", run: () => {
+          p.characters = GEN.genCharacters(p);
+          return [`建立 <b>${p.characters.length}</b> 个角色真值档案：${p.characters.map(c => esc(c.name)).join(" / ")}`,
+          `外貌与服装将贯穿剧本与提示词，保证一致性`];
+        }
+      },
+      {
+        key: "script", run: () => {
+          p.scripts = GEN.genScript(p);
+          return [`生成 <b>${p.scripts.length}</b> 集画面化剧本，每集 4 场（钩子/推进/爆点/卡点）`,
+          `写动作不写心理，写空间不写抽象`];
+        }
+      },
+      {
+        key: "board", run: () => {
+          p.storyboard = GEN.genStoryboard(p);
+          const n = p.storyboard.reduce((a, e) => a + e.shots.length, 0);
+          return [`共拆解 <b>${n}</b> 个镜头`,
+          `每镜自动配：景别 / 机位 / 运镜 / 打光 / 音效 / 时长 / 转场`,
+          `遵循五阶段情绪曲线：激励事件 → 进展纠葛 → 危机 → 高潮 → 结尾`];
+        }
+      },
+      {
+        key: "prompt", run: () => {
+          const isH3 = p.meta.model === "h3";
+          return [`套用 <b>${isH3 ? "H3 英文六段式" : "Seedance 中文三段式"}</b> 内核模板`,
+          `含素材声明 / 全局一致性约束 / 分镜时间码 / 音频层 / 负向提示词`];
+        }
+      }
+    ];
+
+    let i = 0;
+    function step() {
+      if (i >= jobs.length) {
+        persist();
+        pushLog("<b>✅ 全链条生成完毕</b>");
+        setTimeout(() => { state.view = "result"; state.resultTab = "overview"; state.curEp = 1; render(); }, 500);
+        return;
+      }
+      state.run.stage = i;
+      state.run.pct = (i / jobs.length) * 100;
+      pushLog(`<span class="log-tag">${KB.pipeline[i].icon} ${KB.pipeline[i].name}</span>`);
+      const box = $(".log-box"); const cur = i;
+      setTimeout(() => {
+        try {
+          const msgs = jobs[cur].run();
+          msgs.forEach(m => pushLog("&nbsp;&nbsp;" + m));
+        } catch (e) {
+          pushLog('<span class="log-err">✗ 出错：' + esc(e.message) + "</span>");
+        }
+        state.run.pct = ((cur + 1) / jobs.length) * 100;
+        const ring = $(".ring-fg");
+        if (ring) { const C = 2 * Math.PI * 52; ring.setAttribute("stroke-dashoffset", C * (1 - state.run.pct / 100)); }
+        const pct = $(".ring-text"); if (pct) pct.innerHTML = `<b>${Math.round(state.run.pct)}</b><span>%</span>`;
+        const now = $(".run-now"); if (now && KB.pipeline[cur + 1]) now.textContent = KB.pipeline[cur + 1].icon + " " + KB.pipeline[cur + 1].name;
+        const list = $(".stage-list");
+        if (list) list.innerHTML = KB.pipeline.map((s, k) => {
+          let cls = "st"; if (k < cur + 1) cls += " done"; else if (k === cur + 1) cls += " now";
+          return `<div class="${cls}"><span class="st-ico">${k < cur + 1 ? "✓" : s.icon}</span><span class="st-main"><b>${s.name}</b><i>${s.desc}</i></span>${k === cur + 1 ? '<span class="spinner"></span>' : ""}</div>`;
+        }).join("");
+        i++;
+        setTimeout(step, 420);
+      }, 260);
+    }
+    step();
+  }
+
+  /* ============================================================
+   * ③ 成果页
+   * ============================================================ */
+  function renderResult() {
+    const p = state.project, st = GEN.stats(p);
+    const isH3 = p.meta.model === "h3";
+    return `
+    <div class="result-head">
+      <div>
+        <div class="rh-title">${esc(p.name)}</div>
+        <div class="rh-sub">${esc(p.meta.genre)} · ${p.meta.episodes}集 · ${isH3 ? "H3" : "Seedance"} · ${fmtDur(st.seconds)}</div>
+      </div>
+      <button class="btn sm line" data-act="rerun">🔄 重跑</button>
+    </div>
+
+    <div class="subtabs">
+      <div class="subtab ${state.resultTab === "overview" ? "active" : ""}" data-act="rtab" data-v="overview">总览</div>
+      <div class="subtab ${state.resultTab === "script" ? "active" : ""}" data-act="rtab" data-v="script">剧本</div>
+      <div class="subtab ${state.resultTab === "board" ? "active" : ""}" data-act="rtab" data-v="board">分镜</div>
+      <div class="subtab ${state.resultTab === "prompt" ? "active" : ""}" data-act="rtab" data-v="prompt">提示词</div>
+    </div>
+
+    ${state.resultTab === "overview" ? renderOverview(st) : ""}
+    ${state.resultTab === "script" ? renderScript() : ""}
+    ${state.resultTab === "board" ? renderBoard() : ""}
+    ${state.resultTab === "prompt" ? renderPrompt() : ""}`;
+  }
+
+  function fmtDur(sec) {
+    if (sec < 60) return sec + " 秒";
+    const m = Math.floor(sec / 60), s = sec % 60;
+    return m + " 分 " + (s ? s + " 秒" : "");
+  }
+
+  /* ---------- 总览：统计 + 图表 ---------- */
+  function renderOverview(st) {
+    const p = state.project;
+    const sb = p.storyboard || [];
+    const first = sb[0];
+    return `
+    <div class="stat-grid">
+      <div class="stat"><b>${st.episodes}</b><span>集</span></div>
+      <div class="stat"><b>${st.shots}</b><span>镜头</span></div>
+      <div class="stat"><b>${fmtDur(st.seconds)}</b><span>总时长</span></div>
+      <div class="stat"><b>${st.characters}</b><span>角色</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📈 情绪曲线 <span class="tag gray">单集 ${p.meta.shotsPerEpisode} 镜</span></div>
+      <div class="card-sub">钩子起跳 → 推进压抑 → 危机触底 → 爆点冲顶 → 卡点收束</div>
+      ${first ? svgEmotion(first.shots) : ""}
+    </div>
+
+    <div class="card">
+      <div class="card-title">📊 景别配比 <span class="tag gray">全剧 ${st.shots} 镜</span></div>
+      ${svgSizeBars(st.sizeCount, st.shots)}
+    </div>
+
+    <div class="card">
+      <div class="card-title">🎭 五阶段结构</div>
+      ${KB.emotionArc.map((e, i) => `
+        <div class="arc-row">
+          <div class="arc-dot" style="background:${KB.palette.emoArc[i]}"></div>
+          <div class="arc-main"><b>${e.stage}</b><i>${e.shot}</i></div>
+          <div class="arc-desc">${e.desc}</div>
+        </div>`).join("")}
+    </div>
+
+    <div class="card">
+      <div class="card-title">👥 角色真值</div>
+      ${(p.characters || []).map(c => `
+        <div class="char-row">
+          <div class="char-ava" style="background:${c.tag === "villain" ? "#ff5a5f22" : "#7c5cff22"};color:${c.tag === "villain" ? "#ff5a5f" : "#7c5cff"}">${esc(c.name.slice(0, 1))}</div>
+          <div class="char-main"><b>${esc(c.name)}</b> <span class="tag ${c.tag === "villain" ? "orange" : "green"}">${esc(c.role)}</span>
+            <div class="char-look">${esc(c.look)}</div>
+            <div class="char-goal">目标：${esc(c.goal)}</div>
+          </div>
+        </div>`).join("")}
+    </div>
+
+    <div class="card">
+      <div class="card-title">📦 导出</div>
+      <button class="btn line block" style="margin-bottom:10px" data-act="export-prompt">导出全部提示词（TXT）</button>
+      <button class="btn line block" style="margin-bottom:10px" data-act="export-board">导出分镜表（TXT）</button>
+      <button class="btn line block" data-act="export-json">导出项目（JSON）</button>
+    </div>`;
+  }
+
+  /* 情绪曲线 SVG */
+  function svgEmotion(shots) {
+    const W = 320, H = 120, pad = 16;
+    const n = shots.length;
+    // 推进段要「先压后放」：从起势一路压到谷底，再在爆点冲顶
+    const pushTotal = shots.filter(s => s.stage === "push").length;
+    let pushSeen = 0;
+    const vals = shots.map((s) => {
+      if (s.stage === "push") {
+        const t = pushTotal > 1 ? pushSeen++ / (pushTotal - 1) : 0;
+        return Math.round(52 - 30 * t);
+      }
+      return { hook: 62, boom: 95, cliff: 68 }[s.stage] || 40;
+    });
+    const max = 100;
+    const pts = vals.map((v, i) => {
+      const x = pad + (W - pad * 2) * (n === 1 ? 0.5 : i / (n - 1));
+      const y = H - pad - (H - pad * 2) * (v / max);
+      return [x, y];
+    });
+    const line = pts.map(p => p[0].toFixed(1) + "," + p[1].toFixed(1)).join(" ");
+    const area = `M${pts[0][0]},${H - pad} L` + pts.map(p => p[0].toFixed(1) + "," + p[1].toFixed(1)).join(" L") + ` L${pts[n - 1][0]},${H - pad} Z`;
+    const gid = "g" + Math.random().toString(36).slice(2, 7);
+    return `
+    <svg viewBox="0 0 ${W} ${H}" class="chart">
+      <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#7c5cff" stop-opacity="0.35"/>
+        <stop offset="100%" stop-color="#7c5cff" stop-opacity="0"/>
+      </linearGradient></defs>
+      <path d="${area}" fill="url(#${gid})"/>
+      <polyline points="${line}" fill="none" stroke="#7c5cff" stroke-width="2.5" stroke-linejoin="round"/>
+      ${pts.map((p, i) => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="4" fill="#fff" stroke="#7c5cff" stroke-width="2"/>`).join("")}
+      ${shots.map((s, i) => `<text x="${pts[i][0].toFixed(1)}" y="${H - 3}" font-size="9" fill="#8a8f9c" text-anchor="middle">${s.no}</text>`).join("")}
+    </svg>`;
+  }
+
+  /* 景别配比条形图 */
+  function svgSizeBars(count, total) {
+    const items = Object.keys(count).map(k => ({ name: k, v: count[k] })).sort((a, b) => b.v - a.v);
+    return `<div class="bars">
+      ${items.map(it => {
+        const pct = total ? Math.round(it.v / total * 100) : 0;
+        const color = KB.palette.size[it.name] || "#7c5cff";
+        return `<div class="bar-row">
+          <div class="bar-name">${esc(it.name)}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color}"></div></div>
+          <div class="bar-val">${it.v}镜 ${pct}%</div>
+        </div>`;
+      }).join("")}
+    </div>`;
+  }
+
+  /* ---------- 分镜子页 ---------- */
+  function renderBoard() {
+    const p = state.project, sb = p.storyboard || [];
+    if (!sb.length) return emptyView("还没有分镜", "回到总览点「重跑」生成", "重跑");
+    const cur = sb.find(e => e.ep === state.curEp) || sb[0];
+    state.curEp = cur.ep;
+
+    return `
+    <div class="ep-scroll">
+      ${sb.map(e => `<div class="ep-chip ${e.ep === cur.ep ? "active" : ""}" data-act="ep" data-v="${e.ep}">${e.ep}</div>`).join("")}
+    </div>
+
+    <div class="card">
+      <div class="card-title">🎬 第${cur.ep}集 · 镜头时间轴 <span class="tag gray">${cur.shots.length}镜 / ${cur.shots.reduce((a, s) => a + (s.duration || 10), 0)}秒</span></div>
+      <div class="timeline">
+        ${cur.shots.map(s => {
+          const w = (s.duration || 10) / cur.shots.reduce((a, x) => a + (x.duration || 10), 0) * 100;
+          const c = KB.palette.size[s.shotSize] || "#7c5cff";
+          return `<div class="tl-seg" style="width:${w}%;background:${c}" title="${esc(s.fn)} · ${esc(s.shotSize)} · ${s.duration}s">
+            <span class="tl-no">${s.no}</span></div>`;
+        }).join("")}
+      </div>
+      <div class="tl-legend">${Object.keys(KB.palette.size).map(k =>
+        `<span class="lg"><i style="background:${KB.palette.size[k]}"></i>${k}</span>`).join("")}</div>
+    </div>
+
+    ${cur.shots.map((s, i) => `
+      <div class="card shot">
+        <div class="shot-head">
+          <span class="shot-no">镜 ${s.no}</span>
+          <span class="shot-fn">${esc(s.fn)}</span>
+          <span class="tag gray">${esc(s.emo)}</span>
+          <span class="shot-dur">${s.duration}s</span>
+        </div>
+        <div class="shot-params">
+          <span class="sp">${esc(s.shotSize)}</span>
+          <span class="sp">${esc(s.camera)}</span>
+          <span class="sp">${esc(s.movement)}</span>
+          <span class="sp">${esc(s.lighting)}</span>
+          <span class="sp snd">🔊 ${esc(s.sound)}</span>
+        </div>
+        <div class="field"><label>画面描述</label><textarea data-edit="shot" data-ep="${cur.ep}" data-shot="${i}" data-field="desc" rows="2">${esc(s.desc)}</textarea></div>
+        <div class="field"><label>台词</label><input type="text" data-edit="shot" data-ep="${cur.ep}" data-shot="${i}" data-field="dialogue" value="${esc(s.dialogue)}" /></div>
+        <div class="grid-2">
+          <div class="field"><label>景别</label><select data-edit="shot" data-ep="${cur.ep}" data-shot="${i}" data-field="shotSize">${KB.shotSizes.map(x => `<option ${x.name === s.shotSize ? "selected" : ""}>${x.name}</option>`).join("")}</select></div>
+          <div class="field"><label>运镜</label><select data-edit="shot" data-ep="${cur.ep}" data-shot="${i}" data-field="movement">${KB.movements.map(x => `<option ${x === s.movement ? "selected" : ""}>${x}</option>`).join("")}</select></div>
+        </div>
+      </div>`).join("")}`;
+  }
+
+  /* ---------- 剧本子页 ---------- */
+  function renderScript() {
+    const p = state.project, sc = p.scripts || [];
+    if (!sc.length) return emptyView("还没有剧本", "回到总览点「重跑」生成", "重跑");
+    const cur = sc.find(s => s.ep === state.curEp) || sc[0];
+    state.curEp = cur.ep;
+    return `
+    <div class="ep-scroll">
+      ${sc.map(s => `<div class="ep-chip ${s.ep === cur.ep ? "active" : ""}" data-act="ep" data-v="${s.ep}">${s.ep}</div>`).join("")}
+    </div>
+    ${cur.scenes.map((s, i) => `
+      <div class="card shot">
+        <div class="shot-head">
+          <span class="shot-no">${esc(s.name)}</span>
+          <span class="tag gray">${esc(s.emo)}</span>
+        </div>
+        <div class="field"><label>画面描述</label><textarea data-edit="script" data-ep="${cur.ep}" data-scene="${i}" data-field="desc" rows="3">${esc(s.desc)}</textarea></div>
+        <div class="grid-2">
+          <div class="field"><label>说话人</label><input type="text" data-edit="script" data-ep="${cur.ep}" data-scene="${i}" data-field="speaker" value="${esc(s.speaker || "")}" /></div>
+          <div class="field"><label>台词 <span class="tag gray">只写要说的话</span></label><input type="text" data-edit="script" data-ep="${cur.ep}" data-scene="${i}" data-field="dialogue" value="${esc(s.dialogue)}" /></div>
+        </div>
+      </div>`).join("")}`;
+  }
+
+  /* ---------- 提示词子页 ---------- */
+  function renderPrompt() {
+    const p = state.project, sb = p.storyboard || [];
+    if (!sb.length) return emptyView("还没有提示词", "回到总览点「重跑」生成", "重跑");
+    const cur = sb.find(e => e.ep === state.curEp) || sb[0];
+    state.curEp = cur.ep;
+    const isH3 = p.meta.model === "h3";
+    const text = isH3 ? GEN.genPromptH3(p, cur.ep) : GEN.genPromptSeedance(p, cur.ep);
+
+    return `
+    <div class="ep-scroll">
+      ${sb.map(e => `<div class="ep-chip ${e.ep === cur.ep ? "active" : ""}" data-act="ep" data-v="${e.ep}">${e.ep}</div>`).join("")}
+    </div>
+
+    <div class="card">
+      <div class="card-title">✨ 第${cur.ep}集提示词
+        <span class="tag">${isH3 ? "H3 六段式" : "Seedance 三段式"}</span>
+        <button class="btn sm line" style="margin-left:auto" data-act="copy-ep">复制本集</button>
+      </div>
+      <div class="card-sub">复制到剪贴板后，粘贴到对应视频生成工具即可。</div>
+      <pre class="prompt-block">${hl(text)}</pre>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn line" data-act="export-prompt">导出全部（TXT）</button>
+      <button class="btn" data-act="copy-ep">复制本集</button>
+    </div>`;
+  }
+
+  /* 提示词语法高亮 */
+  function hl(t) {
+    return esc(t)
+      .replace(/(@图片\d+)/g, '<span class="hl-ref">$1</span>')
+      .replace(/(镜头\d+｜[^：\n]*：)/g, '<span class="hl-shot">$1</span>')
+      .replace(/(\{[^}]*\})/g, '<span class="hl-line">$1</span>')
+      .replace(/(<[^>\n]*>)/g, '<span class="hl-snd">$1</span>')
+      .replace(/(\[Shot \d+\][^\n]*)/g, '<span class="hl-shot">$1</span>')
+      .replace(/^(Style:|Reference image \d+ =.*|Negative prompt:|overall_soundscape:|non_diegetic_music:|Continuity:.*)$/gm, '<span class="hl-key">$1</span>');
+  }
+
+  /* ============================================================
+   * 项目 / 知识库 / 我的
+   * ============================================================ */
+  function renderProjects() {
+    const list = loadProjects();
+    if (!list.length) return emptyView("暂无项目", "新建一个短剧项目，开始你的创作", "新建项目");
+    return `<div class="view">
+      <button class="btn block" style="margin-bottom:14px" data-act="new">＋ 新建项目</button>
+      <div class="card">${list.map(p => {
+        const st = GEN.stats(p);
+        return `<div class="item">
+          <div class="item-main" data-act="open" data-id="${p.id}">
+            <div class="item-title">${esc(p.name)}</div>
+            <div class="item-sub">${esc(p.meta.genre)} · ${p.episodes.length ? p.episodes.length + "集/" + st.shots + "镜" : "未生成"} · ${new Date(p.updatedAt).toLocaleDateString()}</div>
+          </div>
+          <div class="item-actions">
+            <button class="icon-btn" data-act="rename" data-id="${p.id}">✏️</button>
+            <button class="icon-btn" data-act="del" data-id="${p.id}">🗑</button>
+          </div>
+        </div>`;
+      }).join("")}</div>
+    </div>`;
+  }
+
+  function renderKnowledge() {
+    const sec = (title, arr, fn) => `
+      <div class="kb-section">
+        <div class="kb-section-title">${title}</div>
+        <div class="kb-grid">${arr.map(fn).join("")}</div>
+      </div>`;
+    return `<div class="view">
+      ${sec("🎭 题材（17）", KB.genres, g => `<div class="kb-chip" data-kb="genre" data-name="${g.name}"><div class="kb-name">${g.name}</div><div class="kb-sub">${g.core.slice(0, 14)}…</div></div>`)}
+      ${sec("🎨 风格（20）", KB.styles, s => `<div class="kb-chip" data-kb="style" data-id="${s.id}"><div class="kb-name">${s.id} ${s.name}</div><div class="kb-sub">${s.suit}</div></div>`)}
+      ${sec("📐 景别（12）", KB.shotSizes, s => `<div class="kb-chip" data-kb="size" data-name="${s.name}"><div class="kb-name">${s.name}</div><div class="kb-sub">${s.fn}</div></div>`)}
+      ${sec("🎥 机位（14）", KB.cameraAngles, a => `<div class="kb-chip" data-kb="angle" data-name="${a.name}"><div class="kb-name">${a.name}</div><div class="kb-sub">${a.feel}</div></div>`)}
+      ${sec("💡 打光（10）", KB.lightings, l => `<div class="kb-chip" data-kb="light" data-name="${l.name}"><div class="kb-name">${l.name}</div><div class="kb-sub">${l.emo}</div></div>`)}
+      ${sec("🔗 付费卡点（5）", KB.cliffhangers, c => `<div class="kb-chip" data-kb="cliff" data-name="${c.name}"><div class="kb-name">${c.name}</div><div class="kb-sub">${c.use}</div></div>`)}
+      ${sec("🎧 音效 BGM（8类）", KB.soundCats, c => `<div class="kb-chip" data-kb="sound" data-name="${c.name}"><div class="kb-name">${c.name}</div><div class="kb-sub">${c.items.length} 种</div></div>`)}
+    </div>`;
+  }
+
+  function renderAbout() {
+    const list = loadProjects();
+    const total = list.reduce((a, p) => a + (p.storyboard || []).reduce((x, e) => x + e.shots.length, 0), 0);
+    return `<div class="view">
+      <div class="card">
+        <div class="card-title">⚙️ 关于</div>
+        <div class="card-sub">短剧全链条大师 · 基于 short-drama-master 技能方法论封装</div>
+        <p style="font-size:13px;color:var(--text-2);line-height:1.8">
+          一句话梗概 → 自动跑完 分集 / 角色 / 剧本 / 分镜 / 提示词 全链条，
+          输出可直投 Seedance 或 MiniMax H3 的结构化提示词。
+        </p>
+      </div>
+      <div class="stat-grid">
+        <div class="stat"><b>${list.length}</b><span>项目</span></div>
+        <div class="stat"><b>${total}</b><span>累计镜头</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title">💾 数据</div>
+        <button class="btn line block" style="margin-bottom:10px" data-act="backup">导出全部数据</button>
+        <button class="btn danger block" data-act="clear">清空所有数据</button>
+      </div>
+    </div>`;
+  }
+
+  function emptyView(title, sub, btnText) {
+    return `<div class="view"><div class="empty"><div class="empty-ico">🎬</div><h3>${title}</h3><p>${sub}</p>
+      <button class="btn" style="margin-top:16px" data-act="${btnText === "重跑" ? "rerun" : "new"}">${btnText}</button></div></div>`;
+  }
+
+  /* ============================================================
+   * 事件
+   * ============================================================ */
+  function bindView() {
+    $$("[data-edit]").forEach(el => {
+      el.addEventListener("input", onEdit);
+      el.addEventListener("change", onEdit);
+    });
+    const pb = $("#premise-box");
+    if (pb) {
+      const upd = () => { const c = $("#premise-count"); if (c) c.textContent = pb.value.length + " 字"; };
+      pb.addEventListener("input", upd); upd();
+    }
+  }
+
+  function onEdit(e) {
+    const el = e.target, d = el.dataset, v = el.value;
+    if (!state.project) {
+      // 输入页还没有项目：先建一个
+      if (d.edit === "meta" && d.field === "premise") { newProject(""); onEdit(e); return; }
+      return;
+    }
+    if (d.edit === "meta") {
+      if (d.field === "episodes") state.project.meta.episodes = Math.max(1, Math.min(60, parseInt(v) || 12));
+      else if (d.field === "shotsPerEpisode") state.project.meta.shotsPerEpisode = Math.max(3, Math.min(30, parseInt(v) || 8));
+      else state.project.meta[d.field] = v;
+      if (d.field === "premise" && !state.project.storyboard.length) {
+        state.project.name = (GEN.parsePremise(v).name || "我的") + "的短剧";
+      }
+    }
+    else if (d.edit === "shot") {
+      const ep = state.project.storyboard.find(s => s.ep === +d.ep);
+      if (ep) ep.shots[+d.shot][d.field] = v;
+    }
+    else if (d.edit === "script") {
+      const sc = state.project.scripts.find(s => s.ep === +d.ep);
+      if (sc) sc.scenes[+d.scene][d.field] = v;
+    }
+    persist();
+  }
+
+  document.addEventListener("click", function (e) {
+    const kbEl = e.target.closest("[data-kb]");
+    if (kbEl) { showKbDetail(kbEl.dataset); return; }
+
+    const t = e.target.closest("[data-act]");
+    if (!t) return;
+    const act = t.dataset.act, v = t.dataset.v || t.dataset.val;
+
+    if (["create", "projects", "knowledge", "about"].includes(act)) { state.tab = act; render(); return; }
+
+    if (act === "new") { newProject(""); state.view = "input"; state.tab = "create"; render(); return; }
+    if (act === "open") { openProject(t.dataset.id); state.tab = "create"; render(); return; }
+    if (act === "sample") {
+      const s = SAMPLES[+t.dataset.i];
+      const box = $("#premise-box");
+      if (box) { box.value = s.text; box.dispatchEvent(new Event("input", { bubbles: true })); }
+      if (state.project) {
+        state.project.meta.premise = s.text;
+        state.project.meta.genre = s.genre;
+        state.project.name = (GEN.parsePremise(s.text).name || "我的") + "的短剧";
+        persist(); render();
+      } else { newProject(s.text); state.project.meta.genre = s.genre; persist(); render(); }
+      return;
+    }
+    if (act === "run") { runPipeline(); return; }
+    if (act === "rerun") { state.view = "input"; render(); toast("修改配置后再次生成"); return; }
+    if (act === "rtab") { state.resultTab = v; render(); return; }
+    if (act === "ep") { state.curEp = +v; render(); return; }
+
+    if (act === "model") { state.project.meta.model = v; persist(); render(); return; }
+    if (act === "ratio") { state.project.meta.ratio = v; persist(); render(); return; }
+    if (act === "shots") { state.project.meta.shotsPerEpisode = +v; state.project.storyboard = []; persist(); render(); return; }
+
+    if (act === "copy-ep") {
+      const isH3 = state.project.meta.model === "h3";
+      copyText(isH3 ? GEN.genPromptH3(state.project, state.curEp) : GEN.genPromptSeedance(state.project, state.curEp));
+      return;
+    }
+
+    if (act === "rename") {
+      const list = loadProjects(); const p = list.find(x => x.id === t.dataset.id);
+      const n = prompt("新名称", p.name);
+      if (n) { p.name = n; saveProjects(list); if (state.project && state.project.id === p.id) state.project.name = n; render(); }
+      return;
+    }
+    if (act === "del") {
+      if (!confirm("确定删除该项目？不可恢复")) return;
+      saveProjects(loadProjects().filter(x => x.id !== t.dataset.id));
+      if (state.projectId === t.dataset.id) { state.project = null; state.projectId = null; state.view = "input"; }
+      render(); return;
+    }
+
+    if (act === "export-json") { downloadText(state.project.name + ".json", JSON.stringify(state.project, null, 2)); toast("已导出 JSON"); return; }
+    if (act === "export-prompt") {
+      const isH3 = state.project.meta.model === "h3";
+      const txt = (state.project.storyboard || []).map(ep =>
+        `【第${ep.ep}集】\n\n${isH3 ? GEN.genPromptH3(state.project, ep.ep) : GEN.genPromptSeedance(state.project, ep.ep)}\n`).join("\n" + "=".repeat(30) + "\n");
+      downloadText(state.project.name + "-提示词.txt", txt); toast("已导出提示词"); return;
+    }
+    if (act === "export-board") {
+      let txt = `分镜表 · ${state.project.name}\n\n`;
+      (state.project.storyboard || []).forEach(ep => {
+        txt += `第${ep.ep}集\n`;
+        ep.shots.forEach(s => txt += `镜${s.no} ${s.fn} | ${s.shotSize} | ${s.camera} | ${s.movement} | ${s.lighting} | ${s.duration}s | 🔊${s.sound}\n  画面：${s.desc}\n  台词：${s.dialogue}\n`);
+        txt += "\n";
+      });
+      downloadText(state.project.name + "-分镜表.txt", txt); toast("已导出分镜表"); return;
+    }
+    if (act === "backup") { downloadText("短剧大师-备份-" + Date.now() + ".json", JSON.stringify(loadProjects(), null, 2)); return; }
+    if (act === "clear") {
+      if (confirm("清空所有项目数据？不可恢复")) { localStorage.removeItem(LS_PROJECTS); state.project = null; state.projectId = null; state.view = "input"; render(); }
+      return;
+    }
+  });
+
+  /* 知识库抽屉 */
+  function showKbDetail(d) {
+    let html = "";
+    if (d.kb === "genre") { const g = KB.genres.find(x => x.name === d.name); html = `<h3>${g.name}</h3><div class="kv"><b>覆盖：</b>${g.covers}</div><div class="kv"><b>爽点：</b>${g.core}</div><div class="kv"><b>卡点：</b>${g.cliff}</div><div class="kv"><b>景别配比：</b>特写${g.shots.cu}% / 近景${g.shots.mcu}% / 中景${g.shots.ms}% / 全景${g.shots.ls}%</div>`; }
+    else if (d.kb === "style") { const s = KB.styles.find(x => x.id === d.id); html = `<h3>${s.id} ${s.name}</h3><div class="kv"><b>适用：</b>${s.suit}</div><div class="kv"><b>提示词前缀：</b>${s.prefix}</div>`; }
+    else if (d.kb === "size") { const s = KB.shotSizes.find(x => x.name === d.name); html = `<h3>${s.name}（${s.abbr}）</h3><div class="kv"><b>功能：</b>${s.fn}</div><div class="kv"><b>适用：</b>${s.use}</div><div class="kv"><b>禁忌：</b>${s.avoid}</div>`; }
+    else if (d.kb === "angle") { const a = KB.cameraAngles.find(x => x.name === d.name); html = `<h3>${a.name}</h3><div class="kv"><b>感受：</b>${a.feel}</div><div class="kv"><b>适用：</b>${a.use}</div><div class="kv"><b>情绪：</b>${a.emo}</div>`; }
+    else if (d.kb === "light") { const l = KB.lightings.find(x => x.name === d.name); html = `<h3>${l.name}（${l.en}）</h3><div class="kv"><b>光源：</b>${l.light}</div><div class="kv"><b>阴影：</b>${l.shadow}</div><div class="kv"><b>适用：</b>${l.use}</div><div class="kv"><b>情绪：</b>${l.emo}</div>`; }
+    else if (d.kb === "cliff") { const c = KB.cliffhangers.find(x => x.name === d.name); html = `<h3>${c.name}</h3><div class="kv"><b>画面：</b>${c.visual}</div><div class="kv"><b>音效：</b>${c.sound}</div><div class="kv"><b>适用：</b>${c.use}</div>`; }
+    else if (d.kb === "sound") { const c = KB.soundCats.find(x => x.name === d.name); html = `<h3>${c.name}</h3><div class="kv">${c.items.map(i => `<span class="tag" style="margin:3px">${i}</span>`).join("")}</div>`; }
+
+    const mask = document.createElement("div"); mask.className = "drawer-mask";
+    const drawer = document.createElement("div"); drawer.className = "drawer";
+    drawer.innerHTML = `<div class="drawer-handle"></div>${html}<button class="btn block" style="margin-top:14px" data-act="close-drawer">关闭</button>`;
+    document.body.appendChild(mask); document.body.appendChild(drawer);
+    mask.onclick = close;
+    drawer.querySelector("[data-act=close-drawer]").onclick = close;
+    function close() { drawer.remove(); mask.remove(); }
+  }
+
+  /* ---------- 初始化 ---------- */
+  function init() {
+    $$("#tabbar .tab").forEach(tab => tab.addEventListener("click", () => { state.tab = tab.dataset.tab; render(); }));
+    ensureProject();
+    render();
+  }
+  init();
+})();
+
+</script>
+</body>
+</html>

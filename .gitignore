@@ -1,5 +1,5 @@
-# 构建产物（跑 python3 build.py 生成）
-dist/
+# 构建产物 dist/ 不忽略：单文件成品是本项目的核心交付物（双击即用、可直接下载分享），
+# 必须入库。改完源码请重新跑 `python3 build.py` 后再提交，否则 dist 会落后于源码。
 
 # Python / Node
 __pycache__/
