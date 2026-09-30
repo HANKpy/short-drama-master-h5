@@ -1,0 +1,186 @@
+# 短剧全链条大师 H5 · 项目交接记忆文档
+
+> 本文档用于「换一个 agent / 换一台电脑」继续开发本项目时快速上手。
+> 由 Auto 在 2026-09-30 基于完整对话历史整理。
+> 配套文件：`short-drama-master-h5.zip`（全部源码 + 单文件成品 + 本记忆文档）。
+
+---
+
+## 1. 项目一句话说明
+
+一个**纯前端、零依赖、离线可用**的短剧创作工作台 H5 应用。把短剧生产方法论（题材/风格/景别/机位/打光/卡点/音效/分镜公式/提示词模板）编码为内置规则引擎，用户输入**一段梗概**后**一键跑完全链条**（解析梗概→分集→角色→剧本→分镜→双模型提示词），并配**进度可视化 + 图形化成果页**。
+
+- 无后端、无 API Key、无联网、无第三方库（原生 HTML/CSS/JS，ES5+ 兼容写法）。
+- 数据存浏览器 `localStorage`（key: `sdm_projects_v2`，当前项目 id 用 `sdm_current_v1`），不上传任何服务器。
+  - ⚠️ 键名曾写作 `sdm_projects_v1`，实际代码是 `v2`；已更正文档。**不要**再把键写回 `v1`，否则会读到旧数据。
+
+---
+
+## 2. 完整对话时间线（按用户消息）
+
+| # | 用户原话（意图） | 做了什么 |
+|---|---|---|
+| 1 | 「安装技能。」+ 4 个技能 zip | 安全审计后安装 `dialect-master`、`seedance-video-prompt`、`h3-video-prompt`、`short-drama-master` 到 `~/.codebuddy/skills/` |
+| 2 | 「更新这几个技能」+ 4 个新 zip | 审计后发现 `short-drama-master` 包有 **GBK 编码文件名乱码 + 反斜杠路径**问题，用 Python（`cp437`→`gbk` 解码、反斜杠转正斜杠）修复后覆盖安装 |
+| 3 | 「根据我的技能，帮我开发一个 H5 的『短剧全链条大师』应用。要求操作简单，界面美观简洁。」 | 读技能文档 → 规划 → 开发纯前端应用（index.html + css + 3 个 js + build.py），初版是 **7 步向导**工作台 |
+| 4 | 「完全无法使用」 | 根因：①localhost 沙箱地址设备不可达；②多文件结构导致白屏。改为**单文件自包含 HTML**（CSS/JS 全内联，`file://` 直接打开），并用设备分享工具分发 |
+| 5 | 「帮我把开发的代码上传到 GitHub…你新建一个代码仓库」 | 受阻：GitHub MCP 无建仓权限；沙箱网络 `github.com` 被 DNS 劫持到 `198.18.0.17`；PAT 也因网络层阻断无法使用。改为请用户**网页自建空仓库** |
+| 6 | 「继续执行」（多次） | 因 429 额度用尽，多次重试推进 |
+| 7 | 「你再帮我检查一下，还有哪些方面可以优化的？我需要用户输入一段梗概以后，它可以自动执行。可以看到当前的进度，最终输出优秀的视频生成提示词。而且页面要美观、好看、多图形化展示。」 | **推倒重写**：一键流水线（4.8 秒跑完 20 集/160 镜）、环形进度 + 阶段状态 + 滚动日志、SVG 情绪曲线 + 景别条形图 + 彩色时间轴、提示词引擎重写。提交 `dba06f0` |
+| 8 | 「这是 GitHub 的 token，你试试：ghp_**（已脱敏）**」 | 经排查为**网络层阻断**，PAT 本身无效也无法到达 GitHub。给出「建议立即吊销该 token」的结论 |
+| 9 | 「我在根据我上传的短剧技能开发一个应用，这是之前开发的文件和资料，你看一下，并且分析一下有什么问题。然后接着继续开发。」 | 从 WorkBuddy 空间拉回 6 个节点（源码真值在 `short-drama-master-h5-full` 的 git bundle 里），还原工作副本，**做代码审查并修复发现的逻辑缺陷**（见第 6 节新增行） |
+| 10 | 「继续，读取你需要更新的文档并完成更新」 | 跑 `_validate.js` 无头验证 → 更正文档（`localStorage` 键名、README 过时描述）→ 重建单文件 `dist` |
+
+> ⚠️ **安全提醒（务必处理）**：第 8 条提到的那个 GitHub PAT 曾在对话里明文出现。**请立刻到 GitHub → Settings → Developer settings → Personal access tokens 吊销它**，并视作已泄露。
+> 即便当时未成功联网，也应按「已泄露」处理。
+>
+> 🚫 **本文档已脱敏**：原文里写着的 `ghp_…` 明文token 已在本轮移除，避免随仓库公开。后续任何交接文档**不得**再写明文 token，只写「已脱敏」即可。
+
+---
+
+## 3. 当前状态与待办
+
+### ✅ 本轮（审查 + 修复）已完成
+
+- ✅ **代码审查**：定位到 3 个此前未发现的**输出逻辑缺陷**（角色占位名、主角性别硬编码、剧本未流入分镜/提示词），详见第 6 节。
+- ✅ **3 个缺陷全部修复**，并用新增的无头验证脚本 `_validate.js` 跑通（男主/女主/末世 3 个样本全绿）。
+- ✅ **新增「剧本」成果子页**（成果页标签变为：总览 / 剧本 / 分镜 / 提示词），可直接编辑每场画面描述与台词。
+- ✅ 文档更正：`localStorage` 键名 `v1`→`v2`、README 的「7 步向导」过时描述已同步。
+- ✅ 单文件 `dist/short-drama-master-h5.html` 已重建（源码改动后必须重跑 `build.py`，否则线上仍是旧产物）。
+
+### ⏸️ 仍待办
+
+- ⏸️ **GitHub 上传未完成**：沙箱网络无法访问 github.com，且 MCP 无建仓权限。计划在 `https://github.com/new?name=short-drama-master-h5` 由用户网页建空仓库后，由 agent 推送。仓库名建议 `short-drama-master-h5`，owner 用 `HANKpy`（git 已配置 user.name=HANKpy）。
+- ⏸️ **PAT 泄露**：建议吊销（见第 2 节提醒）。
+- ⏸️ **`pickName` 待增强**：末世样本「幸存者陈默」只抽出「幸存者」——主角名识别对「身份词+姓名」结构（无明确主语）仍会退化成身份词。修复见第 6 节备注，属可选增强。
+- ⏸️ **端到端 UI 未验证**：`app.js` 的改动只做了逻辑层 Node 验证，尚未跑浏览器端到端测试（Playwright）。
+
+---
+
+## 4. 文件结构与职责
+
+```
+short-drama-master-h5/
+├── index.html                # H5 骨架：顶部栏 + 主内容区 #main + 底部 4 Tab（创作/项目/知识库/我的）+ 3 个 <script> 引用
+├── css/
+│   └── style.css             # 移动优先样式：主题色/卡片/表单/环形进度/SVG 图表/镜头时间轴/Tab 栏
+├── js/
+│   ├── data.js               # 知识库常量（最大文件之一）：
+│   │                         #   genres/styles/templates/shotSizes/cameraAngles/lightings/
+│   │                         #   cliffhangers/soundCats/shotFormula/movements/emotionArc/goldenEffects/
+│   │                         #   parseDict（梗概词典）、genreActions（17 题材×136 条画面动作库）、
+│   │                         #   fallbackActions、goldenLines（金句库）、shotDurations、transitions
+│   ├── templates.js          # 生成引擎（核心算法）：
+│   │                         #   pickName() 主角名识别（带停用字表防贪婪）
+│   │                         #   detectGender() 主角性别推断（本轮新增）
+│   │                         #   genName() / genCharName() 角色真名生成（本轮新增）
+│   │                         #   parsePremise() 梗概解析（主角/时代/金手指/危机）
+│   │                         #   actionsOf() / genEpisodes() 四幕结构分集
+│   │                         #   genScript() / genStoryboard() 剧本与分镜
+│   │                         #   genPromptSeedance() 中文三段式提示词
+│   │                         #   genPromptH3() 英文六段式提示词（累计时间码 + Negative prompt）
+│   └── app.js                # 应用逻辑：状态机 / runPipeline(6 阶段异步) / render / 事件绑定 /
+│                             #   localStorage 读写 / 复制导出 / 分镜内联编辑
+├── build.py                  # 构建脚本：把 css/js 内联进 index.html → dist/short-drama-master-h5.html
+├── dist/
+│   └── short-drama-master-h5.html   # 单文件成品（自包含，双击即用，不依赖外部文件）
+├── _validate.js              # 无头验证脚本（Node 直跑），回归检查生成引擎逻辑
+├── _e2e.js                   # DOM 桩端到端验证（Node 直跑），覆盖 app.js 渲染与编辑链路
+├── README.md                 # 使用与二次开发说明
+├── HANDOFF.md                # 本文档（交接记忆）
+└── .gitignore                # 忽略 dist/、__pycache__、.DS_Store 等
+```
+
+> 内联顺序固定：`data → templates → app`（依赖顺序），改 `build.py` 时勿乱序。
+
+---
+
+## 5. 核心逻辑说明（继续开发必读）
+
+1. **梗概解析 `parsePremise`**：用正则 + 词典（`parseDict`）从一句话里抽取主角名、时代背景、金手指、核心危机，结果贯穿分集/剧本/分镜/提示词。
+2. **主角名识别 `pickName`**：最初贪心匹配成「林凡穿」，已加**停用字表**（如「穿越/穿/带/携」等）防贪婪，改名字识别逻辑时务必保留该停用字表。
+   - ⚠️ **已知局限（待增强）**：对「身份词 + 姓名」结构（如「幸存者陈默」）只能抽出身份词「幸存者」。修法方向：识别到身份词后在本句/前句里继续向后找 2 字人名。
+3. **四幕分集 `genEpisodes`**：开局 / 发展 / 转折 / 高潮；每集含主冲突 + 爽点 + 集尾卡点。
+4. **分镜公式 `genStoryboard`**：按 7/8 镜公式 + 五阶段情绪曲线（`emotionArc`）拆解；每镜自动配景别/机位/运镜/打光/音效/时长/转场。
+   - 性能坑：20 集 640 镜下拉曾卡死 → 改为**按集渲染、每集 8 镜**。
+   - 时间码坑：H3 累计时间码曾回绕 → 用 `i*10%60` 修正（注意每镜时长单位）。
+5. **双模型提示词**：
+   - **Seedance 中文三段式**：素材声明 + 全局一致性约束 + 带时间码/转场/BGM 的分镜序列。
+   - **MiniMax H3 英文六段式**：Style + Reference lock + 累计时间码 Shot list + 音频层 + Negative prompt。
+6. **进度可视化**：`runPipeline` 6 阶段异步；环形进度（SVG `stroke-dasharray`）、阶段状态徽标、滚动日志。
+7. **图形化成果**：SVG 情绪曲线（折线）、景别配比（条形图）、五阶段结构卡片、分镜时间轴（按时长配色）、统计卡（集数/镜头数/总时长/角色数）。
+8. **角色真名生成（本轮新增）**：主角用 `parsePremise` 抽出的真名；反派/女主/配角原本会直出「反派/女主/配角」这种占位名，现由 `genCharName()` 按姓氏库 + 男女名库拼出真名（如窦辰 / 仲婉薇 / 凤砚）。
+   - 主角性别由 `detectGender()` 从原梗概推断（含「她/女主/女王」→女，「男主/王爷」→男），`look` 外观随之变成「青年男性 / 青年女性」——**此前硬编码成男性**，导致女主项目的角色外观全错。
+9. **剧本 → 分镜 → 提示词内容链路（本轮修复）**：`genScript()` 产出的四场剧本**此前从未被下游消费**，`genStoryboard()` 只按题材动作库现造描述，导致每集的核心冲突/爽点/卡点在分镜层全部丢失、各集内容雷同。
+   - 现修复为：分镜 `desc` 以 `scene.desc` 为基底、追加 `ep.conflict`/`ep.highlight`/`ep.cliffhanger`；提示词由分镜反推，叙事自动贯通。
+
+---
+
+## 6. 已修复 Bug 清单（含根因，避免重踩）
+
+| 现象 | 根因 | 修复 |
+|---|---|---|
+| 技能包文件名乱码、路径打不开 | Windows 打包用 GBK + 反斜杠 | Python `cp437`→`gbk` 解码、反斜杠转 `/` |
+| 应用白屏「完全无法使用」 | ①localhost 沙箱设备不可达 ②多文件结构加载失败 | 改为单文件自包含 HTML，`file://` 直接打开 |
+| 主角名识别成「林凡穿」 | 正则贪心匹配 | 加停用字表限制边界 |
+| H3 模型切换无效 | HTML 用 `data-val`，JS 读 `dataset.v` 不一致 | 统一为 `data-v` |
+| 20 集 640 镜下拉卡死 | 一次性渲染全部镜头 DOM | 改为按集渲染、每集 8 镜 |
+| H3 时间码回绕 | 取模公式错误 | 改为 `i*10%60` 累计修正 |
+| 画面台词重复 | 动作库与金句库未去重 | 题材动作库 + 金句库去重 |
+| GitHub 上传失败 | 网络层 DNS 劫持 + MCP 无权限 + PAT 无法达 | 转由用户网页自建空仓库（待办） |
+| **角色名是占位名**：反派/女主/配角直接出现在提示词与成果页里 | `genCharacters()` 未给非主角生成姓名 | 新增 `genCharName()`（姓氏库+男女名库）生成真名 |
+| **主角性别固定为男**：女主项目里主角外观写「青年男性」 | `look` 在 `genCharacters()` 里硬编码男性 | 新增 `detectGender()` 从原梗概推断性别，`look` 随之切换 |
+| **每集内容雷同、剧本白写**：分镜与提示词里完全看不到该集冲突/爽点/卡点 | `genStoryboard()` 只消费题材动作库，未读 `genScript()` 产出；`genScript()` 结果无人消费 | 分镜 `desc` 以 `scene.desc` 为基底并追加 `ep.conflict`/`highlight`/`cliffhanger`；提示词由分镜反推 |
+| **产物与源码不同步**：改了源码但 `dist/` 还是旧版 | 单文件是构建产物，不随源码自动更新 | **改完源码必须重跑 `python3 build.py`** |
+
+---
+
+## 7. 如何运行 / 构建 / 部署
+
+### 直接用单文件成品（推荐，最简单）
+下载 `dist/short-drama-master-h5.html`，**任意浏览器双击打开即用**，无需服务器、无需同目录其他文件。
+
+### 本地多文件开发
+```bash
+cd short-drama-master-h5
+python3 -m http.server 8899
+# 浏览器打开 http://localhost:8899
+# 或直接双击 index.html
+```
+
+### 改源码后重新生成单文件版
+```bash
+python3 build.py
+# 产物 dist/short-drama-master-h5.html（含结束标签冲突检测，有 </style>/</script> 内联会报错）
+```
+
+### 部署到 GitHub Pages（手机访问）
+仓库 Settings → Pages → Source 选 `main` 分支根目录，访问 `https://HANKpy.github.io/short-drama-master-h5/`。
+
+---
+
+## 8. 二次开发入口（改哪里）
+
+| 想改什么 | 改哪个文件 |
+|---|---|
+| 知识库（题材/风格/景别/打光等常量） | `js/data.js`（纯常量对象，改完刷新） |
+| 推荐逻辑（分镜怎么拆、参数怎么配） | `js/templates.js` 的 `SHOT_REC` 映射表 + 各 `gen*` 函数 |
+| 界面/交互 | `js/app.js`（状态机与渲染）+ `css/style.css`（样式） |
+| 单文件打包 | `build.py`（内联顺序勿乱） |
+
+---
+
+## 9. 给其他 Agent 的接力提示
+
+- **不要重复安装技能**：`dialect-master`、`seedance-video-prompt`、`h3-video-prompt`、`short-drama-master` 已在 `~/.codebuddy/skills/` 就绪（如需微调短剧包，注意 GBK 编码问题）。
+- **GitHub 推送前先确认网络**：若仍无法访问 github.com，应请用户网页建空仓库并（安全地）提供有 `repo` 权限的 PAT，或改用设备分享/打包下载方式交付。
+- **PAT 安全**：任何明文 token 都应提醒用户吊销，不要再次写入文件或日志。
+- **保持「零依赖、单文件可用」的架构原则**：新增功能尽量不引入第三方库；若必须改多文件结构，记得同步更新 `build.py` 的内联逻辑。
+- **测试（三层，按改动类型选）**：
+  1. **逻辑层 `_validate.js`**（几秒）：造假 `window` 加载 `data.js` + `templates.js`，对男主/女主/末世 3 个样本跑完整生成引擎，打印主角性别外观、角色真名、剧本、分镜 desc/dialogue、提示词首行，断言「提示词不含 反派/女主/配角 字面」。
+     👉 **改 `templates.js` / `data.js` 后必跑**。
+  2. **端到端 `_e2e.js`**（约 6 秒，跑的是 `dist/` 里的真实单文件产物）：用 DOM 桩驱动真实交互链路——新建项目 → 填梗概 → 一键流水线 → 切剧本/分镜/提示词子页 → 编辑剧本字段 → 断言已持久化，最后切集不报错。
+     👉 **改 `app.js` 后必跑**（这层才是之前一直缺的）。
+  3. **浏览器层 Playwright**：真实浏览器里确认无 JS 错误、长集数不卡顿、滚动/触摸正常。属于可选补强。
+- **改完别忘重建**：`node _validate.js && node _e2e.js` 都通过后，再跑 `python3 build.py` 重新产出 `dist/` 单文件 —— 否则两处测试测的是**旧产物**，交付出去的还是旧行为。
+```
