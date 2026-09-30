@@ -57,6 +57,13 @@
 - ✅ **GitHub 仓库已建并同步**：<https://github.com/HANKpy/short-drama-master-h5>（public）。
 - ✅ **端到端已覆盖**：`_e2e.js` 用 DOM 桩跑真实产物，不再只靠 Playwright。
 
+### ✅ 第三轮（复验上传问题 + 补齐 dist）
+
+- ✅ **上传失败原因已查明**：不是权限问题。PAT 权限完整（建仓/写文件/git push 全部实测 201/通过），真正原因是「代理掐断 git 大 POST」+「API 上传造成的历史分叉」。详见第 7 节排查结论表。
+- ✅ **`dist/` 单文件成品纳入版本库**：原来被 `.gitignore` 排除，导致仓库里只有源码、拿不到可双击即用的成品。已取消忽略并补传（130KB）。
+- ✅ **本地与远端历史已接上**：`git rebase FETCH_HEAD` 后 fast-forward 推送成功，两端零差异。
+- ✅ **`sync_github.sh` 升级**：优先 git push（内置 rebase 步骤），失败自动回退 Contents API；文件清单补上 `dist/`。
+
 ### ⏸️ 仍待办
 
 - ⏸️ **PAT 泄露**：建议吊销（见第 2 节提醒）。仓库里已无明文 token，但聊天记录里出现过。
@@ -177,18 +184,43 @@ python3 build.py
 仓库：<https://github.com/HANKpy/short-drama-master-h5>（public，owner `HANKpy`）
 
 ```bash
-# 正常网络
-git add -A && git commit -m "..." && git push
+# 一条命令搞定（脚本会先试 git push，失败自动回退 Contents API）
+GH_TOKEN=你的PAT ./sync_github.sh
 
-# 代理环境（git push 报 RPC failed / curl 52 Empty reply from server）
-GH_TOKEN=你的PAT ./sync_github.sh     # 走 Contents API 逐文件上传
+# 或者手动
+git add -A && git commit -m "..." && git push
 ```
 
-> ⚠️ **两个坑**
+> ⚠️ **三个坑（都已踩过并解决）**
 > 1. **GitHub MCP 没有建仓权限**（403 Resource not accessible by integration），建仓要用 PAT + API；MCP 适合读仓库/提 PR。
 > 2. **GitHub 会扫描提交历史里的密钥**：只要历史中任一 commit 含明文 PAT，push 就会被拦（`push declined due to repository rule violations`）。
 >    本次就踩了——我改了 `HANDOFF.md` 的当前版本，但**旧 commit 里仍有 token**，必须重建历史（`git update-ref -d refs/heads/main` 后重新提交）才推得上去。
 >    👉 所以：**任何 token 都不要写进会被提交的文件**。
+> 3. **push 被拒不一定是被 2 拦，也可能是历史分叉**：`Updates were rejected because the remote contains work that you do not have locally`。
+>    本次成因：远端那批 commit 是早前用 **Contents API 逐个上传**产生的，与本地 commit 链分叉（两者有共同祖先但不是 fast-forward）。
+>    解法：`git fetch origin main && git rebase FETCH_HEAD` 接上历史再推 —— **不要用 `--force`**，会丢远端内容。
+>    `sync_github.sh` 已经内置了这个 rebase 步骤。
+
+### 「上传失败」排查结论（2026-10-01 复验）
+
+用一枚带完整 `repo` 权限的 PAT 做了端到端复验，结论是：**不是权限问题，代码其实早已上传成功**。
+
+| 探测项 | 结果 |
+|---|---|
+| `GET /user` 认证 | 200，`X-OAuth-Scopes` 含 `repo` / `delete_repo` / `admin:repo_hook` / `workflow` 等完整权限 |
+| 建仓 `POST /user/repos` | **201**（实测建了临时仓库再删掉，204） |
+| 写文件 `PUT /contents/...` | **201** |
+| `git push` over HTTPS | **可用**（临时仓库实测；失败信息是 fast-forward 拒绝，不是网络/鉴权错误） |
+
+失败的真正原因有两个，都和网络/历史有关，与 token 权限无关：
+
+1. **代理掐断了 git 的大 POST**（`RPC failed; curl 52 Empty reply from server`）—— 同一时刻 `curl` 调 API 却是通的，所以改走 Contents API 上传成功。
+2. **历史分叉导致的 non-fast-forward**（见上文坑 3）—— 表现为 "Updates were rejected"，很容易被误读成"没权限"。
+
+判断技巧：**看报错文本**。权限问题的信号是 `403` / `Permission denied` / `Resource not accessible`；
+`curl 52` 是网络被掐；`Updates were rejected` 只是本地落后于远端，rebase 一下就好。
+
+> 现在仓库已完整：源码 + `dist/` 单文件成品 + 文档，共 13 个文件，本地与远端零差异，Pages 状态 `built`。
 
 ### 部署到 GitHub Pages（手机访问）
 仓库 Settings → Pages → Source 选 `main` 分支根目录，访问 `https://HANKpy.github.io/short-drama-master-h5/`。
