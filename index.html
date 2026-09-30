@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+  <meta content="#7c5cff" name="theme-color">
+  <title>短剧全链条大师</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- 移动端：底部 Tab 栏；PC 端：左侧栏（由 CSS 媒体查询切换） -->
+    <nav id="tabbar">
+      <div class="tab active" data-tab="create">
+        <span class="ti">🚀</span><span class="tx">创作</span>
+      </div>
+      <div class="tab" data-tab="projects">
+        <span class="ti">📁</span><span class="tx">项目</span>
+      </div>
+      <div class="tab" data-tab="knowledge">
+        <span class="ti">📚</span><span class="tx">知识库</span>
+      </div>
+      <div class="tab" data-tab="about">
+        <span class="ti">⚙️</span><span class="tx">我的</span>
+      </div>
+    </nav>
+
+    <div class="shell">
+      <header id="topbar">
+        <div class="logo">短剧<em>全链条</em>大师</div>
+        <span class="hidden" id="project-chip"></span>
+        <div class="hidden" id="stepper"></div>
+      </header>
+      <main id="main"></main>
+    </div>
+
+    <div id="toast"></div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/templates.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
