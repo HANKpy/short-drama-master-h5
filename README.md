@@ -59,6 +59,8 @@ python3 build.py
 
 ### 方式二：本地开发（多文件源码版）
 
+仓库地址：<https://github.com/HANKpy/short-drama-master-h5>
+
 ```bash
 git clone https://github.com/HANKpy/short-drama-master-h5.git
 cd short-drama-master-h5
@@ -70,10 +72,25 @@ python3 -m http.server 8899
 
 ### 方式三：GitHub Pages（手机随时随地访问）
 
-仓库 Settings → Pages → Source 选 `main` 分支 / `docs` 或根目录，保存后访问：
+仓库 Settings → Pages → Source 选 `main` 分支根目录，保存后访问：
 
 ```
 https://HANKpy.github.io/short-drama-master-h5/
+```
+
+### 同步代码到 GitHub
+
+正常网络下直接 `git push`：
+
+```bash
+git add -A && git commit -m "..." && git push
+```
+
+如果你的网络（代理）会掐断 git 的大 POST，报 `RPC failed; curl 52 Empty reply from server`，
+改用脚本走 API 上传（PAT 只放环境变量，不要写进任何文件）：
+
+```bash
+GH_TOKEN=你的PAT ./sync_github.sh
 ```
 
 ---
