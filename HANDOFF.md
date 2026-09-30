@@ -30,6 +30,7 @@
 | 8 | 「这是 GitHub 的 token，你试试：ghp_**（已脱敏）**」 | 经排查为**网络层阻断**，PAT 本身无效也无法到达 GitHub。给出「建议立即吊销该 token」的结论 |
 | 9 | 「我在根据我上传的短剧技能开发一个应用，这是之前开发的文件和资料，你看一下，并且分析一下有什么问题。然后接着继续开发。」 | 从 WorkBuddy 空间拉回 6 个节点（源码真值在 `short-drama-master-h5-full` 的 git bundle 里），还原工作副本，**做代码审查并修复发现的逻辑缺陷**（见第 6 节新增行） |
 | 10 | 「继续，读取你需要更新的文档并完成更新」 | 跑 `_validate.js` 无头验证 → 更正文档（`localStorage` 键名、README 过时描述）→ 重建单文件 `dist` |
+| 11 | 「1、单集镜头数改为自定义可填 2、UI优化，支持移动端和PC端 3、结合4个短剧技能检查BUG 4、在GitHub新建项目同步代码」 | ①镜数改 3–30 可填（并修了底层「填 12 仍出 8 镜」的退化 bug）②UI 重做为移动端底部 Tab / PC 左侧栏+居中限宽 ③派子 agent 全量对照 4 个技能，修掉 7 个 P0 规范违规 ④建 GitHub 仓库并同步（MCP 无建仓权限→用 PAT+API；又撞上密钥扫描拦历史里的 token→重建历史后才推上去） |
 
 > ⚠️ **安全提醒（务必处理）**：第 8 条提到的那个 GitHub PAT 曾在对话里明文出现。**请立刻到 GitHub → Settings → Developer settings → Personal access tokens 吊销它**，并视作已泄露。
 > 即便当时未成功联网，也应按「已泄露」处理。
@@ -48,12 +49,20 @@
 - ✅ 文档更正：`localStorage` 键名 `v1`→`v2`、README 的「7 步向导」过时描述已同步。
 - ✅ 单文件 `dist/short-drama-master-h5.html` 已重建（源码改动后必须重跑 `build.py`，否则线上仍是旧产物）。
 
+### ✅ 第二轮（自定义镜数 + 双端 UI + 技能对齐 + 上 GitHub）
+
+- ✅ **单集镜数 3–30 自定义**：原来只有 7/8 镜两个按钮。⚠️ 改造时发现底层还有个坑——`KB.shotFormula[n] || KB.shotFormula[8]`，**填 12 实际还是出 8 镜**。现已改为按比例生成阶段序列（钩子1 + 推进≈45% + 爆点 + 卡点1），见第 5 节。
+- ✅ **UI 双端适配**：移动端底部 Tab / **PC 左侧栏 + 居中限宽**（`index.html` 新增 `.shell` 容器，PC 用 flex 布局把 `#tabbar` 变成 216px 侧栏）。
+- ✅ **对齐 4 个技能规范**（详见第 6 节新增行）：修了 7 个 P0 级违规 + 若干 P1。
+- ✅ **GitHub 仓库已建并同步**：<https://github.com/HANKpy/short-drama-master-h5>（public）。
+- ✅ **端到端已覆盖**：`_e2e.js` 用 DOM 桩跑真实产物，不再只靠 Playwright。
+
 ### ⏸️ 仍待办
 
-- ⏸️ **GitHub 上传未完成**：沙箱网络无法访问 github.com，且 MCP 无建仓权限。计划在 `https://github.com/new?name=short-drama-master-h5` 由用户网页建空仓库后，由 agent 推送。仓库名建议 `short-drama-master-h5`，owner 用 `HANKpy`（git 已配置 user.name=HANKpy）。
-- ⏸️ **PAT 泄露**：建议吊销（见第 2 节提醒）。
-- ⏸️ **`pickName` 待增强**：末世样本「幸存者陈默」只抽出「幸存者」——主角名识别对「身份词+姓名」结构（无明确主语）仍会退化成身份词。修复见第 6 节备注，属可选增强。
-- ⏸️ **端到端 UI 未验证**：`app.js` 的改动只做了逻辑层 Node 验证，尚未跑浏览器端到端测试（Playwright）。
+- ⏸️ **PAT 泄露**：建议吊销（见第 2 节提醒）。仓库里已无明文 token，但聊天记录里出现过。
+- ⏸️ **`pickName` 待增强**：末世样本「幸存者陈默」只抽出「幸存者」——主角名识别对「身份词+姓名」结构（无明确主语）仍会退化成身份词。属可选增强。
+- ⏸️ **方言技能 `dialect-master` 未接入**：评估过，成本低、收益明确（剧本台词加「方言风格」下拉 + 浓度档 L1/L2/L3，提示词输出「用粤语说道{…}」）。等用户确认再做。
+- ⏸️ **无「分集」成果页**：四幕结构与每集卡点产出后目前不可见、不可导出，建议后续加一个 episodes 子页。
 
 ---
 
@@ -86,6 +95,7 @@ short-drama-master-h5/
 │   └── short-drama-master-h5.html   # 单文件成品（自包含，双击即用，不依赖外部文件）
 ├── _validate.js              # 无头验证脚本（Node 直跑），回归检查生成引擎逻辑
 ├── _e2e.js                   # DOM 桩端到端验证（Node 直跑），覆盖 app.js 渲染与编辑链路
+├── sync_github.sh            # 同步源码到 GitHub（GH_TOKEN=xxx ./sync_github.sh）；git push 被代理掐断时的兜底
 ├── README.md                 # 使用与二次开发说明
 ├── HANDOFF.md                # 本文档（交接记忆）
 └── .gitignore                # 忽略 dist/、__pycache__、.DS_Store 等
@@ -132,6 +142,14 @@ short-drama-master-h5/
 | **主角性别固定为男**：女主项目里主角外观写「青年男性」 | `look` 在 `genCharacters()` 里硬编码男性 | 新增 `detectGender()` 从原梗概推断性别，`look` 随之切换 |
 | **每集内容雷同、剧本白写**：分镜与提示词里完全看不到该集冲突/爽点/卡点 | `genStoryboard()` 只消费题材动作库，未读 `genScript()` 产出；`genScript()` 结果无人消费 | 分镜 `desc` 以 `scene.desc` 为基底并追加 `ep.conflict`/`highlight`/`cliffhanger`；提示词由分镜反推 |
 | **产物与源码不同步**：改了源码但 `dist/` 还是旧版 | 单文件是构建产物，不随源码自动更新 | **改完源码必须重跑 `python3 build.py`** |
+| **自定义镜数无效**：填 12 镜仍只出 8 镜 | `KB.shotFormula[n] \|\| KB.shotFormula[8]` 直接回退到 8 | 新增 `stageSeq(n)` 按比例生成阶段序列；`durationsFor(n)` 生成时长 |
+| **同一集内多镜描述完全相同** | 同阶段镜头共用 `scene.desc`，动作 `act` 被丢弃；`emoHint` 是固定抽象情绪词 | 按「阶段内第几镜」轮转动作与景别/机位/运镜/打光；去掉抽象情绪词 |
+| **提示词里角色名混进朗读区** | `dialogue` 存成「林凡：台词」整体塞进 `{}` | `speaker` 与 `dialogue` 拆开，渲染成 `镜头切至X，用普通话说道{台词}` |
+| **H3 提示词六段式整体写错** | 只有 Style/Reference/Continuity/Shot/music/Negative，且 `Reference image N =` 格式非法、时间码是三段式 `00:mm:ss.mms` | 重写六段式：`<Subject N> is … in <Picture N>`、时间码 `mm:ss.000`、台词 `<d>[Chinese]…</d>`、`non_diegetic_music: N/A` |
+| **运镜写了「定格」** | `SHOT_REC` 的 hook/boom3/cliff 里都有「定格」 | 换成「快速推镜 / 缓慢推镜 / 固定镜头」（Seedance 铁律27 / H3 铁律7：片内不 freeze） |
+| **「金色闪耀」「BGM燃向」被当音效** | `boom3.sounds` 存的是特效/BGM 词，却渲染成 `<音效>` | 换成可听到的具体声源（呼吸声、钟摆滴答） |
+| **女频题材主角被判成男性** | `detectGender` 无性别线索时一律返回男 | 加 `FEMALE_GENRES`（甜宠/虐恋/萌宝/家庭伦理/言情）题材兜底 |
+| **情绪曲线自相矛盾** | push 段 `v + i*6` 单调上升，与「危机触底」矛盾 | push 段改为从 52 递减到 22 的谷底，再在爆点冲顶 |
 
 ---
 
@@ -153,6 +171,24 @@ python3 -m http.server 8899
 python3 build.py
 # 产物 dist/short-drama-master-h5.html（含结束标签冲突检测，有 </style>/</script> 内联会报错）
 ```
+
+### 同步到 GitHub
+
+仓库：<https://github.com/HANKpy/short-drama-master-h5>（public，owner `HANKpy`）
+
+```bash
+# 正常网络
+git add -A && git commit -m "..." && git push
+
+# 代理环境（git push 报 RPC failed / curl 52 Empty reply from server）
+GH_TOKEN=你的PAT ./sync_github.sh     # 走 Contents API 逐文件上传
+```
+
+> ⚠️ **两个坑**
+> 1. **GitHub MCP 没有建仓权限**（403 Resource not accessible by integration），建仓要用 PAT + API；MCP 适合读仓库/提 PR。
+> 2. **GitHub 会扫描提交历史里的密钥**：只要历史中任一 commit 含明文 PAT，push 就会被拦（`push declined due to repository rule violations`）。
+>    本次就踩了——我改了 `HANDOFF.md` 的当前版本，但**旧 commit 里仍有 token**，必须重建历史（`git update-ref -d refs/heads/main` 后重新提交）才推得上去。
+>    👉 所以：**任何 token 都不要写进会被提交的文件**。
 
 ### 部署到 GitHub Pages（手机访问）
 仓库 Settings → Pages → Source 选 `main` 分支根目录，访问 `https://HANKpy.github.io/short-drama-master-h5/`。
