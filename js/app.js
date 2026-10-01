@@ -45,7 +45,8 @@
       id: uid(), name: "未命名短剧", updatedAt: Date.now(),
       meta: {
         premise: premise || "", genre: "逆袭打脸", style: "S07", model: "seedance",
-        ratio: "9:16", episodes: 12, shotsPerEpisode: 8
+        ratio: "9:16", episodes: 12, shotsPerEpisode: 8,
+        dialect: "none", dialectLevel: "L2"
       },
       episodes: [], characters: [], scripts: [], storyboard: [], parsed: null
     };
@@ -121,9 +122,14 @@
   ];
 
   function renderInput() {
-    const m = state.project ? state.project.meta : { premise: "", genre: "逆袭打脸", style: "S07", model: "seedance", ratio: "9:16", episodes: 12, shotsPerEpisode: 8 };
+    const m = state.project ? state.project.meta : { premise: "", genre: "逆袭打脸", style: "S07", model: "seedance", ratio: "9:16", episodes: 12, shotsPerEpisode: 8, dialect: "none", dialectLevel: "L2" };
     const gOpt = KB.genres.map(g => `<option ${g.name === m.genre ? "selected" : ""}>${g.name}</option>`).join("");
     const sOpt = KB.styles.map(s => `<option value="${s.id}" ${s.id === m.style ? "selected" : ""}>${s.id} ${s.name}</option>`).join("");
+    // 方言：不开 / 6 语系；开启后才显示浓度三档
+    const dOn = m.dialect && m.dialect !== "none";
+    const dOpt = [`<option value="none" ${!dOn ? "selected" : ""}>不开（全普通话）</option>`]
+      .concat((KB.dialects || []).map(d => `<option value="${d.id}" ${m.dialect === d.id ? "selected" : ""}>${d.name} · ${d.region}</option>`)).join("");
+    const lvCfg = (KB.dialectLevels || []).find(l => l.id === (m.dialectLevel || "L2")) || null;
     return `
     <div class="hero">
       <div class="hero-title">短剧全链条大师</div>
@@ -165,6 +171,17 @@
           <div class="seg-item ${m.ratio === "16:9" ? "active" : ""}" data-act="ratio" data-v="16:9">16:9 横屏</div>
         </div>
       </div>
+      <div class="field"><label>主角方言 <span class="tag gray">dialect-master</span></label>
+        <select data-edit="meta" data-field="dialect">${dOpt}</select>
+        <div class="hint">方言只作用于主角（同一角色只允许一个主导语系），其余角色保持普通话作对照。</div>
+      </div>
+      ${dOn ? `
+      <div class="field"><label>方言浓度 <span class="tag gray">${lvCfg ? lvCfg.ratio : ""}</span></label>
+        <div class="seg">
+          ${(KB.dialectLevels || []).map(l => `<div class="seg-item ${(m.dialectLevel || "L2") === l.id ? "active" : ""}" data-act="dlevel" data-v="${l.id}">${l.id} ${l.name.slice(3)}</div>`).join("")}
+        </div>
+        <div class="hint">${lvCfg ? `${lvCfg.desc}。字幕：${lvCfg.sub}。适合：${lvCfg.use}` : ""}</div>
+      </div>` : ""}
     </div>
 
     <button class="btn big block" data-act="run">🚀 一键生成全链条</button>
@@ -521,6 +538,14 @@
           <div class="field"><label>说话人</label><input type="text" data-edit="script" data-ep="${cur.ep}" data-scene="${i}" data-field="speaker" value="${esc(s.speaker || "")}" /></div>
           <div class="field"><label>台词 <span class="tag gray">只写要说的话</span></label><input type="text" data-edit="script" data-ep="${cur.ep}" data-scene="${i}" data-field="dialogue" value="${esc(s.dialogue)}" /></div>
         </div>
+        ${s.dialect ? `
+        <div class="dlc">
+          <div class="dlc-head">🗣️ 方言契约 ${esc(s.dialect.dialect)} · ${esc(s.dialect.level)} <span class="tag gray">提示词：${esc(s.dialect.cue)}{台词}</span></div>
+          <div class="dlc-row"><span class="dlc-k">普通话</span><span class="dlc-v">${esc(s.dialect.gloss)}</span></div>
+          <div class="dlc-row"><span class="dlc-k">注音</span><span class="dlc-v">${esc(s.dialect.reading)}</span></div>
+          <div class="dlc-row"><span class="dlc-k">加味点</span><span class="dlc-v">${esc((s.dialect.flavor || []).join("；"))}</span></div>
+          <div class="dlc-row"><span class="dlc-k">字幕</span><span class="dlc-v">${esc(s.dialect.subtitle)}（后期烧录，片内不生成文字）</span></div>
+        </div>` : ""}
       </div>`).join("")}`;
   }
 
@@ -660,6 +685,8 @@
       if (d.field === "episodes") state.project.meta.episodes = Math.max(1, Math.min(60, parseInt(v) || 12));
       else if (d.field === "shotsPerEpisode") state.project.meta.shotsPerEpisode = Math.max(3, Math.min(30, parseInt(v) || 8));
       else state.project.meta[d.field] = v;
+      // 换方言/换浓度会改变所有台词，已生成的剧本与分镜必须失效重跑
+      if (d.field === "dialect") { state.project.scripts = []; state.project.storyboard = []; }
       if (d.field === "premise" && !state.project.storyboard.length) {
         state.project.name = (GEN.parsePremise(v).name || "我的") + "的短剧";
       }
@@ -706,6 +733,11 @@
 
     if (act === "model") { state.project.meta.model = v; persist(); render(); return; }
     if (act === "ratio") { state.project.meta.ratio = v; persist(); render(); return; }
+    if (act === "dlevel") {
+      state.project.meta.dialectLevel = v;
+      state.project.scripts = []; state.project.storyboard = [];   // 浓度变了台词要重出
+      persist(); render(); return;
+    }
     if (act === "shots") { state.project.meta.shotsPerEpisode = +v; state.project.storyboard = []; persist(); render(); return; }
 
     if (act === "copy-ep") {
