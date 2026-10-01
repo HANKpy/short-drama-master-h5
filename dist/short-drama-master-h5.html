@@ -493,6 +493,26 @@ textarea { resize: vertical; line-height: 1.7; }
   #main { max-width: 1180px; }
 }
 
+/* ============================================================
+ * 方言契约卡（DLC：正字 / 注音 / 释义 / 加味点 / 字幕方案）
+ * ============================================================ */
+.dlc {
+  margin-top: 12px; padding: 12px 14px;
+  background: linear-gradient(180deg, #faf9ff, #f6f7fc);
+  border: 1px solid var(--brand-soft); border-radius: var(--radius-sm);
+}
+.dlc-head {
+  font-size: 13px; font-weight: 700; color: var(--brand);
+  margin-bottom: 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+}
+.dlc-row { display: flex; gap: 10px; font-size: 12.5px; line-height: 1.7; }
+.dlc-row + .dlc-row { margin-top: 2px; }
+.dlc-k { flex: 0 0 52px; color: var(--text-3); font-weight: 600; }
+.dlc-v { flex: 1; color: var(--text-2); word-break: break-all; }
+
+/* 表单下的说明文字 */
+.hint { margin-top: 6px; font-size: 12px; color: var(--text-3); line-height: 1.6; }
+
 </style>
 </head>
 <body>
@@ -890,6 +910,167 @@ window.KB = (function () {
   const shotDurations = { 7: [5, 10, 10, 10, 10, 10, 8], 8: [5, 10, 10, 10, 8, 10, 10, 8] };
   const transitions = ["硬切", "快速推镜转场", "闪白", "匹配剪辑", "音效桥接"];
 
+  /* ---------- 方言层（对接 dialect-master 内核） ----------
+     四大能力：换字（正字转写）、换音（注音）、加味（语气词/俗语/金句）、定调（浓度档）。
+     红线：不地域歧视、不直写脏字（谐音级替代）、不硬造读音、关键信息须可被非方言受众接住。
+     swaps 为 [普通话, 方言正字, 注音]；注音按各语系体系（粤拼/台罗/白话字），
+     川渝与东北属官话、与普通话音近，以谐音汉字为主，重点在词汇与语气而非注音。
+  */
+  const dialectLevels = [
+    { id: "L1", name: "L1 点缀", ratio: "≤15%", desc: "普通话骨架＋方言语气词/称谓/招牌词", sub: "可不挂方言字幕", use: "面向全国受众、方言配角" },
+    { id: "L2", name: "L2 半方言", ratio: "30%~60%", desc: "关键句用方言整句、俗语；其余普通话", sub: "方言整句挂正字字幕", use: "方言主角、文化碰撞喜剧（默认档）" },
+    { id: "L3", name: "L3 重方言", ratio: "≥70%", desc: "大段方言正字", sub: "全程正字字幕", use: "地域定制片、方言短视频号" }
+  ];
+
+  const dialects = [
+    {
+      id: "yue", name: "粤语", region: "广州西关音（偏老广州）", cue: "用粤语说道",
+      roman: "粤拼 Jyutping（数字 1~6 表声调）",
+      readingNote: "粤拼，供配音与原生音频音色参考；生僻字按内核「换同音字」处理",
+      swaps: [
+        ["不", "唔", "m4"], ["没有", "冇", "mou5"], ["的", "嘅", "ge3"], ["了", "咗", "zo2"],
+        ["在", "喺", "hai2"], ["是", "係", "hai6"], ["什么", "咩", "me1"], ["怎么", "點", "dim2"],
+        ["为什么", "點解", "dim2 gaai2"], ["哪里", "邊度", "bin1 dou6"], ["谁", "邊個", "bin1 go3"],
+        ["他", "佢", "keoi5"], ["她", "佢", "keoi5"], ["我们", "我哋", "ngo5 dei6"], ["这", "呢", "ni1"],
+        ["很", "好", "hou2"], ["太", "咁", "gam3"], ["给", "俾", "bei2"], ["吃", "食", "sik6"],
+        ["看", "睇", "tai2"], ["说", "講", "gong2"], ["知道", "知", "zi1"], ["漂亮", "靚", "leng3"],
+        ["厉害", "犀利", "sai1 lei6"], ["现在", "而家", "ji4 gaa1"], ["谢谢", "唔該", "m4 goi1"],
+        ["喜欢", "鍾意", "zung1 ji3"], ["对不起", "對唔住", "deoi3 m4 zyu6"], ["等会儿", "陣間", "zan6 gaan1"],
+        ["完蛋", "大鑊", "daai6 wok6"], ["没事", "冇事", "mou5 si6"], ["些", "啲", "di1"], ["还", "仲", "zung6"],
+        ["睡觉", "瞓覺", "fan3 gaau3"], ["吵架", "嗌交", "aai3 gaau1"], ["骗", "呃", "ngaak1"], ["拿", "攞", "lo2"],
+        ["站", "企", "kei5"], ["钱", "蚊", "man1"], ["聪明", "精", "zing1"], ["傻", "憨居", "ngam6 geoi1"]
+      ],
+      particles: ["啦", "㗎", "喎", "咩", "啫", "啵", "嘛", "呀", "嘅啫", "吓嘛"],
+      exclaims: ["大鑊", "哎吔", "弊傢伙", "嘩", "陰公", "真係"],
+      proverbs: ["天跌落嚟當被冚", "得閒飲茶", "執輸行頭，慘過敗家", "輸人唔輸陣", "一樣米養百樣人", "馬死落地行", "淡淡定，有錢剩", "食碗面反碗底"],
+      golden: [
+        "天跌落嚟當被冚，最緊要飲啖茶先。", "得閒飲茶啦你～", "你有錢你大晒啊？茶都未斟滿就講大話。",
+        "做人最緊要識得「執生」，呢度唔通，咪行嗰度囉。", "靚仔唔可以當飯食，但靚湯可以。",
+        "大鑊？唔係，係大好機會。", "我唔識韓語，但我識做人。"
+      ],
+      gags: [
+        { src: "대박", srcRead: "dae-bak", srcMean: "大发、好厉害", heard: "大鑊", heardMean: "完蛋、闯大祸", payoff: "对方欢呼，她脸色煞白抱头蹲下" },
+        { src: "사랑해", srcRead: "sa-rang-hae", srcMean: "我爱你", heard: "死啦", heardMean: "死定了", payoff: "被告白听成「你死定了」，转头就跑" },
+        { src: "오빠", srcRead: "o-ppa", srcMean: "哥哥（女称男）", heard: "阿爸", heardMean: "爸爸", payoff: "听见喊欧巴，四处找爸爸" },
+        { src: "화이팅", srcRead: "hwa-i-ting", srcMean: "加油", heard: "快啲", heardMean: "快点", payoff: "人家喊加油，她反而催「快啲啦」" }
+      ]
+    },
+    {
+      id: "chuan", name: "川渝话", region: "成都/重庆城区（西南官话）", cue: "用四川话说道",
+      roman: "谐音汉字为主（与普通话音近）",
+      readingNote: "与普通话音近，重点在词汇与语气；个别字标声调差异，大段台词建议母语者复核",
+      swaps: [
+        ["什么", "啥子", ""], ["为什么", "为啥子", ""], ["怎么", "咋个", ""], ["怎么办", "咋整", ""],
+        ["哪里", "哪點", ""], ["谁", "哪個", ""], ["很", "嘿", ""], ["非常", "慘", ""],
+        ["好", "巴適", ""], ["棒", "安逸", ""], ["不行", "要不得", ""], ["可以", "要得", ""],
+        ["厉害", "兇", ""], ["傻", "瓜", ""], ["知道", "曉得", ""], ["不知道", "曉不得", ""],
+        ["骗", "豁", ""], ["没有", "沒得", ""], ["没事", "沒得事", ""], ["小孩", "娃兒", ""],
+        ["漂亮", "乖", ""], ["舒服", "安逸", ""], ["快点", "搞快", ""], ["等一下", "等哈兒", ""],
+        ["糟糕", "哦豁", ""], ["完蛋", "哦豁", ""], ["吵架", "打錘", ""], ["便宜", "相因", ""],
+        ["聊天", "擺龍門陣", ""], ["骗人", "扯把子", ""], ["结束", "殺割", ""], ["加油", "雄起", ""]
+      ],
+      particles: ["噻", "撒", "嘛", "哈", "哦", "喔", "嗦", "唦"],
+      exclaims: ["哦豁", "哎呀呀", "哎喲喂", "瓜西西", "巴適得板", "不存在"],
+      proverbs: ["不存在！天塌下來當被子蓋，火鍋照樣燙。", "要得公道，打個顛倒。", "曉不得就問，餓了就整。", "人生就像燙火鍋，撈到自己碗頭的才算數。", "人對了，頭都可以割下來給你坐墩兒。"],
+      golden: [
+        "不存在！天塌下來當被子蓋，火鍋照樣燙。", "雄起！怕啥子，慘了再說。", "巴適得板！",
+        "你豁我哦？（拆穿专用）", "要得公道，打個顛倒。", "曉不得就問，餓了就整，憋到起要出大事。"
+      ],
+      gags: []
+    },
+    {
+      id: "dongbei", name: "东北话", region: "辽吉黑城市口语（北方官话）", cue: "用东北话说道",
+      roman: "谐音汉字为主（与普通话音近）",
+      readingNote: "与普通话音近，重点在词汇与节奏；北方其他片区差异大，勿用东北词冒充整个北方",
+      swaps: [
+        ["什么", "啥", ""], ["怎么", "咋", ""], ["怎么办", "咋整", ""], ["为什么", "咋的呢", ""],
+        ["哪里", "哪疙瘩", ""], ["很", "贼", ""], ["非常", "老", ""], ["好", "贼棒", ""],
+        ["棒", "嘎嘎好", ""], ["厉害", "尿性", ""], ["傻", "虎", ""], ["知道", "知道嘍", ""],
+        ["看", "瞅", ""], ["聊天", "嘮嗑", ""], ["吃", "整", ""], ["快点", "麻溜兒", ""],
+        ["糟糕", "完犢子", ""], ["完蛋", "壞菜", ""], ["骗", "忽悠", ""], ["吵架", "嗆嗆", ""],
+        ["喜欢", "稀罕", ""], ["干净", "利索", ""], ["脏", "埋汰", ""], ["地方", "疙瘩", ""],
+        ["角落", "旮旯", ""], ["漂亮", "俊", ""], ["没有", "沒有的事", ""], ["行不行", "好使不好使", ""]
+      ],
+      particles: ["呗", "咋的", "嘛", "啊", "嗯呢", "咋整啊"],
+      exclaims: ["哎呀媽呀", "我滴個乖乖", "拉倒吧", "必須的", "沒毛病", "嘎哈呀"],
+      proverbs: ["沒有什麼是一頓燒烤解決不了的，有就兩頓。", "東北人的交情，是整兩杯整出來的。", "做人得敞亮，別整那些埋汰的。", "天塌下來當被蓋，凍梨化開照樣甜。", "這事兒包我身上，妥妥的，安排！"],
+      golden: [
+        "這事兒包我身上，妥妥的，安排！", "做人得敞亮，別整那些埋汰的。", "拉倒吧，趕緊麻溜兒的，別在這疙瘩掉鏈子。",
+        "哎呀媽呀，你可拉倒吧。", "沒有什麼是一頓燒烤解決不了的，有就兩頓。", "你虎啊？"
+      ],
+      gags: []
+    },
+    {
+      id: "wu", name: "上海话", region: "上海市区新派（吴语）", cue: "用上海话说道",
+      roman: "吴语协会式拼音＋谐音汉字并列",
+      readingNote: "保留浊音与入声，文白异读多、新老派差别大，写台词前定年龄层",
+      swaps: [
+        ["我", "我", "ngu"], ["你", "侬", "non"], ["他", "伊", "yi"], ["不", "勿", "veq"],
+        ["没有", "呒没", "m-meq"], ["的", "个", "geq"], ["在", "辣海", "laq-he"], ["吃", "吃", "chiq"],
+        ["说", "讲", "kan"], ["知道", "晓得", "shiau-teq"], ["很", "老", "l'o"], ["好", "老好", "l'o-h'o"],
+        ["我们", "啊啦", "a-la"], ["漂亮", "嗲", "tia"], ["厉害", "结棍", "ciq-kuen"], ["什么", "啥", "sa"], ["怎么", "哪能", "na-nen"],
+        ["哪里", "啥地方", "sa-di-fan"], ["谁", "啥人", "sa-gnin"], ["现在", "现在", "yi-ze"], ["钱", "钞票", "c'au-p'iao"],
+        ["小孩", "囡囡", "shio-noe"], ["谢谢", "谢谢", "zhia-zhia"], ["对不起", "对勿起", "te-veq-chi"],
+        ["喜欢", "欢喜", "hoe-xi"], ["非常", "邪气", "zia-chi"], ["可以", "来事", "le-zy"], ["笨", "憨", "ngoe"],
+        ["睡觉", "睏觉", "khun-k'o"], ["洗", "汰", "dha"], ["找", "寻", "zhin"]
+      ],
+      particles: ["呀", "哦", "伐", "嚜", "啊啦"],
+      exclaims: ["啊呀呀", "哦喲", "要死哦", "篤定", "煞根", "結棍"],
+      proverbs: ["篤定泰山，慢慢叫來。", "拎得清，比聰明要緊。", "寧可搭聰明人揹包，勿搭戇大喫飯。", "門檻精到九十六。", "上海灘麼，只要儂路子清爽，總有一碗飯喫。"],
+      golden: [
+        "篤定泰山，慢慢叫來。", "拎得清，比聰明要緊。", "煞根！", "上海灘麼，只要儂路子清爽，總有一碗飯喫。",
+        "該樁事體麼，拎得清個麼就做，拎勿清個麼早點攤牌。"
+      ],
+      gags: []
+    },
+    {
+      id: "minnan", name: "闽南语", region: "泉漳/台语（含潮汕话）", cue: "用闽南语说道",
+      roman: "台罗 Tâi-lô",
+      readingNote: "内部腔口差异大（厦门/泉州/漳州/台南/潮汕），台词须先锁腔口",
+      swaps: [
+        ["不", "毋", "m̄"], ["没有", "無", "bô"], ["是", "是", "sī"], ["有", "有", "ū"],
+        ["的", "个", "ê"], ["在", "佇", "tī"], ["吃", "食", "tsia̍h"], ["喝", "啉", "lim"],
+        ["说", "講", "kóng"], ["知道", "知", "tsai"], ["好", "足好", "tsiok hó"],         ["漂亮", "媠", "suí"], ["我们", "阮", "gún"],
+        ["厉害", "𠢕", "gâu"], ["什么", "啥物", "siánn-mih"], ["怎么", "按怎", "án-tsuánn"],
+        ["哪里", "佗位", "tó-uī"], ["谁", "啥人", "siánn-lâng"], ["现在", "這馬", "tsit-má"],
+        ["钱", "錢", "tsînn"], ["小孩", "囡仔", "gín-á"], ["谢谢", "多謝", "to-siā"], ["对不起", "失禮", "sit-lé"],
+        ["喜欢", "合意", "ha̍h-ì"], ["吵架", "冤家", "uan-ke"], ["骗", "騙", "phiàn"], ["跑", "走", "tsáu"],
+        ["他", "伊", "i"], ["我", "我", "guá"], ["你", "你", "lí"]
+      ],
+      particles: ["啦", "喔", "咧", "無", "啵"],
+      exclaims: ["夭壽", "慘矣", "有夠", "拚啦", "啥貨"],
+      proverbs: ["一枝草，一點露。", "戲棚下，站久了就是你的。", "三分天註定，七分靠拍拚。", "吃果子，拜樹頭。", "呷飽換茶，坐久攏是你的。"],
+      golden: [
+        "戲棚下，站久了就是你的。", "三分天註定，七分靠拍拚。", "一枝草，一點露。",
+        "啥物𠢕啦，我嘛是拚死拚活咧。", "夭壽喔，恁講甲我親像啥神人。", "食果子，愛拜樹頭。"
+      ],
+      gags: []
+    },
+    {
+      id: "hakka", name: "客家话", region: "四县腔（粤东梅州差异处复核）", cue: "用客家话说道",
+      roman: "四县腔白话字/拼音",
+      readingNote: "腔口先锁定（四县/海陆/梅县），不要混腔；无通用文字标准，拿不准标复核",
+      swaps: [
+        ["我", "𠊎", "ngài"], ["不", "唔", "m̀"], ["是", "係", "he"], ["没有", "無", "mò"],
+        ["的", "個", "ge"], ["吃", "食", "si̍t"], ["说", "講", "kóng"], ["知道", "知", "tî"],
+        ["好", "盡好", "chin hó"], ["漂亮", "靚", "jiang"], ["我们", "𠊎等", "ngài-tén"],
+        ["厉害", "猛", "màng"], ["什么", "麼个", "mak-ke"],
+        ["怎么", "仰般", "ngióng-pân"], ["哪里", "哪位", "nai-vi"], ["谁", "麼人", "mak-ngìn"],
+        ["现在", "這下", "liá-ha"], ["钱", "錢", "chhièn"], ["小孩", "細人仔", "se-ngìn-é"],
+        ["谢谢", "多謝", "tô-chhia"], ["对不起", "失禮", "sṳ̂t-lî"], ["喜欢", "中意", "chûng-yi"],
+        ["他", "佢", "ki"], ["很", "盡", "chin"], ["睡觉", "睡目", "soi-muk"], ["走", "行", "hàng"]
+      ],
+      particles: ["哦", "咧", "咩", "喔", "吔"],
+      exclaims: ["哎吔", "死囉", "還得", "麼个", "恁樣个"],
+      proverbs: ["寧賣祖宗田，不忘祖宗言。", "早起三朝當一工。", "人爭一口氣，佛爭一爐香。", "食果子，愛拜樹頭。", "爛鼓好救月。"],
+      golden: [
+        "寧賣祖宗田，不忘祖宗言。", "人爭一口氣，佛爭一爐香。", "天跌落來𠊎同你共下擎等！",
+        "麼个盡猛，𠊎嘛係比別人較早做个啦。", "爛鼓好救月。"
+      ],
+      gags: []
+    }
+  ];
+
   /* ---------- 流水线阶段定义 ---------- */
   const pipeline = [
     { key: "parse", icon: "🔍", name: "解析梗概", desc: "提取时代背景、金手指、核心冲突" },
@@ -911,7 +1092,7 @@ window.KB = (function () {
     genres, styles, templates, shotSizes, cameraAngles, lightings,
     cliffhangers, soundCats, shotFormula, movements, emotionArc, goldenEffects,
     parseDict, genreActions, fallbackActions, genericActions, goldenLines, shotDurations, transitions,
-    pipeline, palette
+    dialects, dialectLevels, pipeline, palette
   };
 })();
 
@@ -1090,6 +1271,92 @@ window.GEN = (function () {
     return PRED_START.test(act) ? hero + act : act + "，" + hero + "处在画面正中";
   }
 
+  /* ---------- 方言层：对接 dialect-master 内核（换字 / 换音 / 加味 / 定调） ----------
+     产出 DLC（Dialect-Line-Contract）简化版：正字 + 注音 + 普通话释义 + 加味点 + 字幕方案。
+     内核红线：不硬造读音、俗语不堆砌（故俗语只作建议，不塞进台词）、
+               关键信息须可被非方言受众接住（故 L3 强制字幕 + 对方复述）。
+  */
+  function getDialect(id) { return (KB.dialects || []).find(d => d.id === id) || null; }
+
+  /* 语种英译（H3 英文提示词用） */
+  const DIALECT_EN = { yue: "Cantonese", chuan: "Sichuan dialect", dongbei: "Northeast Mandarin", wu: "Shanghainese", minnan: "Hokkien", hakka: "Hakka" };
+  function dialectEn(id) { return DIALECT_EN[id] || "Mandarin"; }
+
+  /* 句尾加语气词：插在标点之前、闭合引号之内
+     「…算一算。」 → 「…算一算呀。」，而不是追加到引号外面 */
+  function withParticle(text, p) {
+    if (!p) return text;
+    const tail = text.match(/[」』”）)]+$/);
+    const close = tail ? tail[0] : "";
+    let core = close ? text.slice(0, -close.length) : text;
+    const pm = core.match(/[。！？!?…]+$/);
+    core = pm ? core.slice(0, pm.index) + p + pm[0] : core + p;
+    return core + close;
+  }
+
+  /* 普通话台词 → 方言 DLC */
+  function applyDialect(text, dialectId, level, seed) {
+    const d = getDialect(dialectId);
+    if (!d || !text) return null;
+    const lv = level || "L2";
+
+    // 换字：长词优先，避免「为什么」被「什么」先替掉
+    const sorted = d.swaps.slice().sort((a, b) => b[0].length - a[0].length);
+    const hits = sorted.filter(s => text.indexOf(s[0]) >= 0);
+    // 定调：L1 只加味不换字；L2 换一半（半方言）；L3 全换（重方言）
+    const n = lv === "L1" ? 0 : (lv === "L2" ? Math.max(1, Math.ceil(hits.length * 0.5)) : hits.length);
+
+    // 保护重叠式（"好好""看看"这类 AA 词）：逐字替换会把"好好"变成"巴適巴適"，语义错乱
+    const reps = [];
+    let out = text.replace(/([\u4e00-\u9fa5])\1/g, (mm) => {
+      reps.push(mm);
+      return "\u0000" + (reps.length - 1) + "\u0000";
+    });
+
+    const used = [];
+    for (let i = 0; i < hits.length && used.length < n; i++) {
+      const [cn, dia, roman] = hits[i];
+      if (out.indexOf(cn) < 0) continue;
+      out = out.split(cn).join(dia);
+      used.push({ cn, dia, roman });
+    }
+    out = out.replace(/\u0000(\d+)\u0000/g, (mm, i) => reps[+i]);
+
+    // 加味①：语气词（性价比最高的加味，三档都加）
+    const particle = pick(d.particles, seed);
+    out = withParticle(out, particle);
+
+    // 加味②：招牌感叹词（仅在危机/完蛋语境前置，L2 起，避免句句带"大鑊"）
+    let exclaim = "";
+    if (lv !== "L1" && /(完蛋|糟|坏|惨|死|输|崩|塌|没了|来不及|完了)/.test(text)) {
+      exclaim = pick(d.exclaims, seed + 3);
+      out = exclaim + "，" + out;
+    }
+
+    // 换音：命中词的注音拼接；官话区（川渝/东北）与普通话音近，按谐音汉字处理
+    const withRoman = used.filter(u => u.roman);
+    const reading = withRoman.length
+      ? withRoman.map(u => `${u.dia} ${u.roman}`).join("／")
+      : d.readingNote;
+
+    // 加味③：俗语只给建议不塞进台词——内核要求「每角色俗语≤1/集」，由编剧择用
+    const flavor = [];
+    if (particle) flavor.push("语气词：" + particle);
+    if (exclaim) flavor.push("感叹词：" + exclaim);
+    if (lv !== "L1") flavor.push("可用俗语：" + pick(d.proverbs, seed + 7));
+
+    // 字幕方案：字幕是后期烧录，片内不生成文字（故只在契约里给方案）
+    const subtitle = lv === "L1" ? "可不挂方言字幕"
+      : lv === "L2" ? "方言整句挂正字字幕；空耳处挂小字"
+        : "全程正字字幕，关键信息另配对方普通话复述";
+
+    return {
+      text: out, reading, gloss: text, flavor, subtitle,
+      cue: d.cue, level: lv, dialect: d.name, region: d.region,
+      roman: d.roman
+    };
+  }
+
   function genScript(project) {
     const m = project.meta;
     const chars = project.characters || [];
@@ -1113,13 +1380,23 @@ window.GEN = (function () {
 
       // speaker 与 dialogue 分开存：提示词的朗读区只能放纯台词，
       // 角色名要放在朗读区外面，否则 TTS 会把名字一起念出来（Seedance 铁律5/51）
+      // 方言只作用于主角：同一角色只允许一个主导语系，避免"南北混杂假方言"（dialect-master 红线）
+      const dId = (m.dialect && m.dialect !== "none") ? m.dialect : null;
+      const dLv = m.dialectLevel || "L2";
+      const mk = (name, emo, desc, speaker, line, sd) => {
+        const dlc = (dId && speaker === hero) ? applyDialect(line, dId, dLv, sd) : null;
+        const sc = { name, emo, desc, speaker, dialogue: dlc ? dlc.text : line };
+        if (dlc) sc.dialect = dlc;   // DLC 契约：正字/注音/释义/加味点/字幕方案
+        return sc;
+      };
+
       scripts.push({
         ep: ep.index,
         scenes: [
-          { name: "钩子场", emo: "冲突爆发", desc: `${env}内，${withHero(hero, hookAct)}。${ep.conflict}`, speaker: hero, dialogue: line1 },
-          { name: "推进场", emo: "事与愿违", desc: `${withHero(hero, pushAct)}。${ep.conflict}`, speaker: villain, dialogue: line2 },
-          { name: "爆点场", emo: "情绪峰值", desc: `${withHero(hero, boomAct)}。${ep.highlight}`, speaker: hero, dialogue: line3 },
-          { name: "卡点场", emo: "悬念收尾", desc: `${withHero(hero, cliffAct)}。${ep.cliffhanger}`, speaker: villain, dialogue: line4 }
+          mk("钩子场", "冲突爆发", `${env}内，${withHero(hero, hookAct)}。${ep.conflict}`, hero, line1, seed),
+          mk("推进场", "事与愿违", `${withHero(hero, pushAct)}。${ep.conflict}`, villain, line2, seed + 11),
+          mk("爆点场", "情绪峰值", `${withHero(hero, boomAct)}。${ep.highlight}`, hero, line3, seed + 23),
+          mk("卡点场", "悬念收尾", `${withHero(hero, cliffAct)}。${ep.cliffhanger}`, villain, line4, seed + 29)
         ]
       });
     }
@@ -1224,7 +1501,7 @@ window.GEN = (function () {
         const speaker = scene ? scene.speaker : who;
         const dialogue = scene ? scene.dialogue : pick(KB.goldenLines[stage] || KB.goldenLines.push, seed);
 
-        return {
+        const shot = {
           no: i + 1, fn: fnNameOf(stage, kIn), scene: STAGE_CN[stage], emo: rec.emo, stage,
           shotSize: rec.sizes[kIn % rec.sizes.length],
           camera: rec.angles[kIn % rec.angles.length],
@@ -1235,6 +1512,9 @@ window.GEN = (function () {
           transition: i === 0 ? "开场" : pick(KB.transitions, seed),
           desc, dialogue, speaker
         };
+        // 方言 DLC 随镜头下传，供提示词生成「用粤语说道{…}」
+        if (scene && scene.dialect) shot.dialect = scene.dialect;
+        return shot;
       });
       out.push({ ep: ep.index, shots });
     }
@@ -1279,7 +1559,11 @@ window.GEN = (function () {
     sb.shots.forEach((s, i) => {
       const start = t, end = t + (s.duration || 10); t = end;
       // 角色名必须放在 {} 朗读区之外，否则 TTS 会把名字念出来
-      const dialogue = s.dialogue ? `镜头切至${s.speaker || hero}，用普通话说道{${s.dialogue}}` : "";
+      // 方言镜头用「用X语说道{…}」标注语种（dialect-master → seedance 对接约定）
+      const dlc = s.dialect;
+      const dialogue = s.dialogue
+        ? `镜头切至${s.speaker || hero}，${dlc ? dlc.cue : "用普通话说道"}{${s.dialogue}}`
+        : "";
       const sound = s.sound ? `<${s.sound}>` : "";
       const trans = i === 0 ? "" : `（${s.transition}）`;
       const bgm = i === 0 ? "（BGM起）" : "";
@@ -1330,7 +1614,10 @@ window.GEN = (function () {
       const angEn = enOf(KB.cameraAngles, s.camera, "en");
       const litEn = enOf(KB.lightings, s.lighting, "en");
       // 台词用 <d>[Chinese]…</d> 包裹，说话人放在标签外（H3 铁律21/44）
-      const speak = s.dialogue ? ` ${s.speaker || hero} speaks in Chinese <d>[Chinese]${s.dialogue}</d>` : "";
+      // 方言镜头在说话人后标注语种，正文仍走 [Chinese]（方言正字属中文字符）
+      const dlcH3 = s.dialect;
+      const lang = dlcH3 ? dialectEn(m.dialect) : "Chinese";
+      const speak = s.dialogue ? ` ${s.speaker || hero} speaks in ${lang} <d>[Chinese]${s.dialogue}</d>` : "";
       shots += `[Shot ${i + 1}] at ${mm}:${ss}.000 (${dur}s) — ${sizeEn} shot, ${angEn}. ${s.desc} `
         + `Camera: ${mvEn(s.movement)}; lighting: ${litEn}.${speak}\n`;
     });
@@ -1382,7 +1669,8 @@ window.GEN = (function () {
   return {
     getGenre, getStyle, getTemplate, parsePremise, pickName,
     genCharacters, genEpisodes, genScript, genStoryboard,
-    genPromptH3, genPromptSeedance, genAll, stats, heroName, villainName
+    genPromptH3, genPromptSeedance, genAll, stats, heroName, villainName,
+    getDialect, applyDialect, dialectEn
   };
 })();
 
@@ -1435,7 +1723,8 @@ window.GEN = (function () {
       id: uid(), name: "未命名短剧", updatedAt: Date.now(),
       meta: {
         premise: premise || "", genre: "逆袭打脸", style: "S07", model: "seedance",
-        ratio: "9:16", episodes: 12, shotsPerEpisode: 8
+        ratio: "9:16", episodes: 12, shotsPerEpisode: 8,
+        dialect: "none", dialectLevel: "L2"
       },
       episodes: [], characters: [], scripts: [], storyboard: [], parsed: null
     };
@@ -1511,9 +1800,14 @@ window.GEN = (function () {
   ];
 
   function renderInput() {
-    const m = state.project ? state.project.meta : { premise: "", genre: "逆袭打脸", style: "S07", model: "seedance", ratio: "9:16", episodes: 12, shotsPerEpisode: 8 };
+    const m = state.project ? state.project.meta : { premise: "", genre: "逆袭打脸", style: "S07", model: "seedance", ratio: "9:16", episodes: 12, shotsPerEpisode: 8, dialect: "none", dialectLevel: "L2" };
     const gOpt = KB.genres.map(g => `<option ${g.name === m.genre ? "selected" : ""}>${g.name}</option>`).join("");
     const sOpt = KB.styles.map(s => `<option value="${s.id}" ${s.id === m.style ? "selected" : ""}>${s.id} ${s.name}</option>`).join("");
+    // 方言：不开 / 6 语系；开启后才显示浓度三档
+    const dOn = m.dialect && m.dialect !== "none";
+    const dOpt = [`<option value="none" ${!dOn ? "selected" : ""}>不开（全普通话）</option>`]
+      .concat((KB.dialects || []).map(d => `<option value="${d.id}" ${m.dialect === d.id ? "selected" : ""}>${d.name} · ${d.region}</option>`)).join("");
+    const lvCfg = (KB.dialectLevels || []).find(l => l.id === (m.dialectLevel || "L2")) || null;
     return `
     <div class="hero">
       <div class="hero-title">短剧全链条大师</div>
@@ -1555,6 +1849,17 @@ window.GEN = (function () {
           <div class="seg-item ${m.ratio === "16:9" ? "active" : ""}" data-act="ratio" data-v="16:9">16:9 横屏</div>
         </div>
       </div>
+      <div class="field"><label>主角方言 <span class="tag gray">dialect-master</span></label>
+        <select data-edit="meta" data-field="dialect">${dOpt}</select>
+        <div class="hint">方言只作用于主角（同一角色只允许一个主导语系），其余角色保持普通话作对照。</div>
+      </div>
+      ${dOn ? `
+      <div class="field"><label>方言浓度 <span class="tag gray">${lvCfg ? lvCfg.ratio : ""}</span></label>
+        <div class="seg">
+          ${(KB.dialectLevels || []).map(l => `<div class="seg-item ${(m.dialectLevel || "L2") === l.id ? "active" : ""}" data-act="dlevel" data-v="${l.id}">${l.id} ${l.name.slice(3)}</div>`).join("")}
+        </div>
+        <div class="hint">${lvCfg ? `${lvCfg.desc}。字幕：${lvCfg.sub}。适合：${lvCfg.use}` : ""}</div>
+      </div>` : ""}
     </div>
 
     <button class="btn big block" data-act="run">🚀 一键生成全链条</button>
@@ -1911,6 +2216,14 @@ window.GEN = (function () {
           <div class="field"><label>说话人</label><input type="text" data-edit="script" data-ep="${cur.ep}" data-scene="${i}" data-field="speaker" value="${esc(s.speaker || "")}" /></div>
           <div class="field"><label>台词 <span class="tag gray">只写要说的话</span></label><input type="text" data-edit="script" data-ep="${cur.ep}" data-scene="${i}" data-field="dialogue" value="${esc(s.dialogue)}" /></div>
         </div>
+        ${s.dialect ? `
+        <div class="dlc">
+          <div class="dlc-head">🗣️ 方言契约 ${esc(s.dialect.dialect)} · ${esc(s.dialect.level)} <span class="tag gray">提示词：${esc(s.dialect.cue)}{台词}</span></div>
+          <div class="dlc-row"><span class="dlc-k">普通话</span><span class="dlc-v">${esc(s.dialect.gloss)}</span></div>
+          <div class="dlc-row"><span class="dlc-k">注音</span><span class="dlc-v">${esc(s.dialect.reading)}</span></div>
+          <div class="dlc-row"><span class="dlc-k">加味点</span><span class="dlc-v">${esc((s.dialect.flavor || []).join("；"))}</span></div>
+          <div class="dlc-row"><span class="dlc-k">字幕</span><span class="dlc-v">${esc(s.dialect.subtitle)}（后期烧录，片内不生成文字）</span></div>
+        </div>` : ""}
       </div>`).join("")}`;
   }
 
@@ -2050,6 +2363,8 @@ window.GEN = (function () {
       if (d.field === "episodes") state.project.meta.episodes = Math.max(1, Math.min(60, parseInt(v) || 12));
       else if (d.field === "shotsPerEpisode") state.project.meta.shotsPerEpisode = Math.max(3, Math.min(30, parseInt(v) || 8));
       else state.project.meta[d.field] = v;
+      // 换方言/换浓度会改变所有台词，已生成的剧本与分镜必须失效重跑
+      if (d.field === "dialect") { state.project.scripts = []; state.project.storyboard = []; }
       if (d.field === "premise" && !state.project.storyboard.length) {
         state.project.name = (GEN.parsePremise(v).name || "我的") + "的短剧";
       }
@@ -2096,6 +2411,11 @@ window.GEN = (function () {
 
     if (act === "model") { state.project.meta.model = v; persist(); render(); return; }
     if (act === "ratio") { state.project.meta.ratio = v; persist(); render(); return; }
+    if (act === "dlevel") {
+      state.project.meta.dialectLevel = v;
+      state.project.scripts = []; state.project.storyboard = [];   // 浓度变了台词要重出
+      persist(); render(); return;
+    }
     if (act === "shots") { state.project.meta.shotsPerEpisode = +v; state.project.storyboard = []; persist(); render(); return; }
 
     if (act === "copy-ep") {
