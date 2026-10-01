@@ -171,6 +171,92 @@ window.GEN = (function () {
     return PRED_START.test(act) ? hero + act : act + "，" + hero + "处在画面正中";
   }
 
+  /* ---------- 方言层：对接 dialect-master 内核（换字 / 换音 / 加味 / 定调） ----------
+     产出 DLC（Dialect-Line-Contract）简化版：正字 + 注音 + 普通话释义 + 加味点 + 字幕方案。
+     内核红线：不硬造读音、俗语不堆砌（故俗语只作建议，不塞进台词）、
+               关键信息须可被非方言受众接住（故 L3 强制字幕 + 对方复述）。
+  */
+  function getDialect(id) { return (KB.dialects || []).find(d => d.id === id) || null; }
+
+  /* 语种英译（H3 英文提示词用） */
+  const DIALECT_EN = { yue: "Cantonese", chuan: "Sichuan dialect", dongbei: "Northeast Mandarin", wu: "Shanghainese", minnan: "Hokkien", hakka: "Hakka" };
+  function dialectEn(id) { return DIALECT_EN[id] || "Mandarin"; }
+
+  /* 句尾加语气词：插在标点之前、闭合引号之内
+     「…算一算。」 → 「…算一算呀。」，而不是追加到引号外面 */
+  function withParticle(text, p) {
+    if (!p) return text;
+    const tail = text.match(/[」』”）)]+$/);
+    const close = tail ? tail[0] : "";
+    let core = close ? text.slice(0, -close.length) : text;
+    const pm = core.match(/[。！？!?…]+$/);
+    core = pm ? core.slice(0, pm.index) + p + pm[0] : core + p;
+    return core + close;
+  }
+
+  /* 普通话台词 → 方言 DLC */
+  function applyDialect(text, dialectId, level, seed) {
+    const d = getDialect(dialectId);
+    if (!d || !text) return null;
+    const lv = level || "L2";
+
+    // 换字：长词优先，避免「为什么」被「什么」先替掉
+    const sorted = d.swaps.slice().sort((a, b) => b[0].length - a[0].length);
+    const hits = sorted.filter(s => text.indexOf(s[0]) >= 0);
+    // 定调：L1 只加味不换字；L2 换一半（半方言）；L3 全换（重方言）
+    const n = lv === "L1" ? 0 : (lv === "L2" ? Math.max(1, Math.ceil(hits.length * 0.5)) : hits.length);
+
+    // 保护重叠式（"好好""看看"这类 AA 词）：逐字替换会把"好好"变成"巴適巴適"，语义错乱
+    const reps = [];
+    let out = text.replace(/([\u4e00-\u9fa5])\1/g, (mm) => {
+      reps.push(mm);
+      return "\u0000" + (reps.length - 1) + "\u0000";
+    });
+
+    const used = [];
+    for (let i = 0; i < hits.length && used.length < n; i++) {
+      const [cn, dia, roman] = hits[i];
+      if (out.indexOf(cn) < 0) continue;
+      out = out.split(cn).join(dia);
+      used.push({ cn, dia, roman });
+    }
+    out = out.replace(/\u0000(\d+)\u0000/g, (mm, i) => reps[+i]);
+
+    // 加味①：语气词（性价比最高的加味，三档都加）
+    const particle = pick(d.particles, seed);
+    out = withParticle(out, particle);
+
+    // 加味②：招牌感叹词（仅在危机/完蛋语境前置，L2 起，避免句句带"大鑊"）
+    let exclaim = "";
+    if (lv !== "L1" && /(完蛋|糟|坏|惨|死|输|崩|塌|没了|来不及|完了)/.test(text)) {
+      exclaim = pick(d.exclaims, seed + 3);
+      out = exclaim + "，" + out;
+    }
+
+    // 换音：命中词的注音拼接；官话区（川渝/东北）与普通话音近，按谐音汉字处理
+    const withRoman = used.filter(u => u.roman);
+    const reading = withRoman.length
+      ? withRoman.map(u => `${u.dia} ${u.roman}`).join("／")
+      : d.readingNote;
+
+    // 加味③：俗语只给建议不塞进台词——内核要求「每角色俗语≤1/集」，由编剧择用
+    const flavor = [];
+    if (particle) flavor.push("语气词：" + particle);
+    if (exclaim) flavor.push("感叹词：" + exclaim);
+    if (lv !== "L1") flavor.push("可用俗语：" + pick(d.proverbs, seed + 7));
+
+    // 字幕方案：字幕是后期烧录，片内不生成文字（故只在契约里给方案）
+    const subtitle = lv === "L1" ? "可不挂方言字幕"
+      : lv === "L2" ? "方言整句挂正字字幕；空耳处挂小字"
+        : "全程正字字幕，关键信息另配对方普通话复述";
+
+    return {
+      text: out, reading, gloss: text, flavor, subtitle,
+      cue: d.cue, level: lv, dialect: d.name, region: d.region,
+      roman: d.roman
+    };
+  }
+
   function genScript(project) {
     const m = project.meta;
     const chars = project.characters || [];
@@ -194,13 +280,23 @@ window.GEN = (function () {
 
       // speaker 与 dialogue 分开存：提示词的朗读区只能放纯台词，
       // 角色名要放在朗读区外面，否则 TTS 会把名字一起念出来（Seedance 铁律5/51）
+      // 方言只作用于主角：同一角色只允许一个主导语系，避免"南北混杂假方言"（dialect-master 红线）
+      const dId = (m.dialect && m.dialect !== "none") ? m.dialect : null;
+      const dLv = m.dialectLevel || "L2";
+      const mk = (name, emo, desc, speaker, line, sd) => {
+        const dlc = (dId && speaker === hero) ? applyDialect(line, dId, dLv, sd) : null;
+        const sc = { name, emo, desc, speaker, dialogue: dlc ? dlc.text : line };
+        if (dlc) sc.dialect = dlc;   // DLC 契约：正字/注音/释义/加味点/字幕方案
+        return sc;
+      };
+
       scripts.push({
         ep: ep.index,
         scenes: [
-          { name: "钩子场", emo: "冲突爆发", desc: `${env}内，${withHero(hero, hookAct)}。${ep.conflict}`, speaker: hero, dialogue: line1 },
-          { name: "推进场", emo: "事与愿违", desc: `${withHero(hero, pushAct)}。${ep.conflict}`, speaker: villain, dialogue: line2 },
-          { name: "爆点场", emo: "情绪峰值", desc: `${withHero(hero, boomAct)}。${ep.highlight}`, speaker: hero, dialogue: line3 },
-          { name: "卡点场", emo: "悬念收尾", desc: `${withHero(hero, cliffAct)}。${ep.cliffhanger}`, speaker: villain, dialogue: line4 }
+          mk("钩子场", "冲突爆发", `${env}内，${withHero(hero, hookAct)}。${ep.conflict}`, hero, line1, seed),
+          mk("推进场", "事与愿违", `${withHero(hero, pushAct)}。${ep.conflict}`, villain, line2, seed + 11),
+          mk("爆点场", "情绪峰值", `${withHero(hero, boomAct)}。${ep.highlight}`, hero, line3, seed + 23),
+          mk("卡点场", "悬念收尾", `${withHero(hero, cliffAct)}。${ep.cliffhanger}`, villain, line4, seed + 29)
         ]
       });
     }
@@ -305,7 +401,7 @@ window.GEN = (function () {
         const speaker = scene ? scene.speaker : who;
         const dialogue = scene ? scene.dialogue : pick(KB.goldenLines[stage] || KB.goldenLines.push, seed);
 
-        return {
+        const shot = {
           no: i + 1, fn: fnNameOf(stage, kIn), scene: STAGE_CN[stage], emo: rec.emo, stage,
           shotSize: rec.sizes[kIn % rec.sizes.length],
           camera: rec.angles[kIn % rec.angles.length],
@@ -316,6 +412,9 @@ window.GEN = (function () {
           transition: i === 0 ? "开场" : pick(KB.transitions, seed),
           desc, dialogue, speaker
         };
+        // 方言 DLC 随镜头下传，供提示词生成「用粤语说道{…}」
+        if (scene && scene.dialect) shot.dialect = scene.dialect;
+        return shot;
       });
       out.push({ ep: ep.index, shots });
     }
@@ -360,7 +459,11 @@ window.GEN = (function () {
     sb.shots.forEach((s, i) => {
       const start = t, end = t + (s.duration || 10); t = end;
       // 角色名必须放在 {} 朗读区之外，否则 TTS 会把名字念出来
-      const dialogue = s.dialogue ? `镜头切至${s.speaker || hero}，用普通话说道{${s.dialogue}}` : "";
+      // 方言镜头用「用X语说道{…}」标注语种（dialect-master → seedance 对接约定）
+      const dlc = s.dialect;
+      const dialogue = s.dialogue
+        ? `镜头切至${s.speaker || hero}，${dlc ? dlc.cue : "用普通话说道"}{${s.dialogue}}`
+        : "";
       const sound = s.sound ? `<${s.sound}>` : "";
       const trans = i === 0 ? "" : `（${s.transition}）`;
       const bgm = i === 0 ? "（BGM起）" : "";
@@ -411,7 +514,10 @@ window.GEN = (function () {
       const angEn = enOf(KB.cameraAngles, s.camera, "en");
       const litEn = enOf(KB.lightings, s.lighting, "en");
       // 台词用 <d>[Chinese]…</d> 包裹，说话人放在标签外（H3 铁律21/44）
-      const speak = s.dialogue ? ` ${s.speaker || hero} speaks in Chinese <d>[Chinese]${s.dialogue}</d>` : "";
+      // 方言镜头在说话人后标注语种，正文仍走 [Chinese]（方言正字属中文字符）
+      const dlcH3 = s.dialect;
+      const lang = dlcH3 ? dialectEn(m.dialect) : "Chinese";
+      const speak = s.dialogue ? ` ${s.speaker || hero} speaks in ${lang} <d>[Chinese]${s.dialogue}</d>` : "";
       shots += `[Shot ${i + 1}] at ${mm}:${ss}.000 (${dur}s) — ${sizeEn} shot, ${angEn}. ${s.desc} `
         + `Camera: ${mvEn(s.movement)}; lighting: ${litEn}.${speak}\n`;
     });
@@ -463,6 +569,7 @@ window.GEN = (function () {
   return {
     getGenre, getStyle, getTemplate, parsePremise, pickName,
     genCharacters, genEpisodes, genScript, genStoryboard,
-    genPromptH3, genPromptSeedance, genAll, stats, heroName, villainName
+    genPromptH3, genPromptSeedance, genAll, stats, heroName, villainName,
+    getDialect, applyDialect, dialectEn
   };
 })();
