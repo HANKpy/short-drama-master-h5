@@ -484,3 +484,23 @@ textarea { resize: vertical; line-height: 1.7; }
 @media (min-width: 1440px) {
   #main { max-width: 1180px; }
 }
+
+/* ============================================================
+ * 方言契约卡（DLC：正字 / 注音 / 释义 / 加味点 / 字幕方案）
+ * ============================================================ */
+.dlc {
+  margin-top: 12px; padding: 12px 14px;
+  background: linear-gradient(180deg, #faf9ff, #f6f7fc);
+  border: 1px solid var(--brand-soft); border-radius: var(--radius-sm);
+}
+.dlc-head {
+  font-size: 13px; font-weight: 700; color: var(--brand);
+  margin-bottom: 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+}
+.dlc-row { display: flex; gap: 10px; font-size: 12.5px; line-height: 1.7; }
+.dlc-row + .dlc-row { margin-top: 2px; }
+.dlc-k { flex: 0 0 52px; color: var(--text-3); font-weight: 600; }
+.dlc-v { flex: 1; color: var(--text-2); word-break: break-all; }
+
+/* 表单下的说明文字 */
+.hint { margin-top: 6px; font-size: 12px; color: var(--text-3); line-height: 1.6; }
