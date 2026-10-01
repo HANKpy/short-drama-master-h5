@@ -12,9 +12,13 @@ const ok = (cond, msg, extra) => {
   if (!cond) fail++;
 };
 
-function build(premise, genre, model, shots, episodes) {
+function build(premise, genre, model, shots, episodes, dialect, level) {
   const p = {
-    meta: { premise, genre, style: "S07", model, ratio: "9:16", episodes: episodes || 4, shotsPerEpisode: shots || 8 },
+    meta: {
+      premise, genre, style: "S07", model, ratio: "9:16",
+      episodes: episodes || 4, shotsPerEpisode: shots || 8,
+      dialect: dialect || "none", dialectLevel: level || "L2"
+    },
     episodes: [], characters: [], scripts: [], storyboard: [], parsed: null
   };
   GEN.genAll(p);
@@ -104,6 +108,66 @@ console.log("\n[6] 剧本内容贯通到分镜");
   const ep1 = p.storyboard[0].shots.map(s => s.desc).join("");
   const ep2 = p.storyboard[1].shots.map(s => s.desc).join("");
   ok(ep1 !== ep2, "第1集与第2集内容不同");
+}
+
+/* ================= 7. 方言层（dialect-master 内核） ================= */
+console.log("\n[7] 方言层：换字 / 换音 / 加味 / 定调");
+{
+  // 关闭方言时不应产生任何 DLC
+  const off = build(P, "逆袭打脸", "seedance", 8, 2, "none");
+  ok(!off.scripts[0].scenes.some(s => s.dialect), "关闭方言 → 无 DLC 字段");
+
+  // 6 语系逐一产出，且 DLC 字段齐全
+  for (const d of KB.dialects) {
+    const p = build(P, "逆袭打脸", "seedance", 8, 2, d.id, "L2");
+    const dlc = p.scripts[0].scenes.find(s => s.dialect);
+    ok(!!dlc, `${d.name}：主角台词带 DLC`);
+    if (!dlc) continue;
+    const v = dlc.dialect;
+    ok(!!(v.text && v.reading && v.gloss && v.cue && v.subtitle), `${d.name}：DLC 字段齐全（正字/注音/释义/语种/字幕）`);
+    ok(v.flavor && v.flavor.length > 0, `${d.name}：有加味点：${v.flavor[0]}`);
+    ok(v.cue === d.cue && /^用.+说道$/.test(v.cue), `${d.name}：提示词语种指令「${v.cue}」`);
+
+    // 换字灾难检测：同一方言词紧邻重复（如"巴適巴適"）
+    const dup = d.swaps.map(s => s[1]).filter(w => w.length >= 2 && v.text.indexOf(w + w) >= 0);
+    ok(dup.length === 0, `${d.name}：无紧邻重复换字` + (dup.length ? " → " + dup[0] + dup[0] : ""));
+
+    // 语气词必须在闭合引号之内，不能挂在引号外面
+    ok(!/[」』”）)][\u4e00-\u9fa5]/.test(v.text.replace(/[」』”）)]$/, "")),
+      `${d.name}：语气词在引号内 → ${v.text}`);
+  }
+
+  // 定调：L1 不换字（只加味），L3 换字量 ≥ L2
+  const l1 = build(P, "逆袭打脸", "seedance", 8, 2, "yue", "L1");
+  const l2 = build(P, "逆袭打脸", "seedance", 8, 2, "yue", "L2");
+  const l3 = build(P, "逆袭打脸", "seedance", 8, 2, "yue", "L3");
+  const hero = (p) => p.scripts[0].scenes.find(s => s.dialect).dialect;
+  ok(hero(l1).text === hero(l1).gloss.replace(/([。！？]?)$/, "") || /呀|啦|㗎|喎|咩|啫|啵|嘛/.test(hero(l1).text),
+    "L1 只加味不换字：" + hero(l1).text);
+  const cnt = (t) => KB.dialects[0].swaps.reduce((n, s) => n + (t.indexOf(s[1]) >= 0 ? 1 : 0), 0);
+  ok(cnt(hero(l3).text) >= cnt(hero(l2).text), `L3 换字量(${cnt(hero(l3).text)}) ≥ L2(${cnt(hero(l2).text)})`);
+  ok(hero(l3).subtitle.includes("全程正字字幕"), "L3 字幕方案：全程正字字幕");
+  ok(hero(l1).subtitle.includes("可不挂"), "L1 字幕方案：可不挂方言字幕");
+
+  // 方言只作用于主角，其他角色保持普通话作对照（避免"南北混杂假方言"）
+  const p = build(P, "逆袭打脸", "seedance", 8, 2, "yue", "L2");
+  const withD = p.scripts[0].scenes.filter(s => s.dialect).map(s => s.speaker);
+  const noD = p.scripts[0].scenes.filter(s => !s.dialect).map(s => s.speaker);
+  ok(new Set(withD).size === 1 && !noD.some(n => withD.includes(n)),
+    `方言只给主角 ${withD[0]}，其余 ${[...new Set(noD)].join("/")} 保持普通话`);
+
+  // 提示词：Seedance 用「用X语说道」，H3 用 speaks in <语种>
+  const sd = GEN.genPromptSeedance(p, 1);
+  ok(/用粤语说道\{/.test(sd), "Seedance：用粤语说道{…}");
+  ok(/用普通话说道\{/.test(sd), "Seedance：对照角色仍用普通话说道{…}");
+  const h3 = GEN.genPromptH3(build(P, "逆袭打脸", "h3", 8, 2, "yue", "L2"), 1);
+  ok(/speaks in Cantonese/.test(h3), "H3：speaks in Cantonese");
+  ok(/<d>\[Chinese\]/.test(h3), "H3：方言正字仍走 <d>[Chinese] 标签");
+
+  // 空耳表（跨语言喜剧）只挂在粤语库上，四要素齐全
+  const yue = KB.dialects.find(d => d.id === "yue");
+  ok(yue.gags.length > 0 && yue.gags.every(g => g.src && g.srcMean && g.heard && g.heardMean && g.payoff),
+    `粤语空耳表 ${yue.gags.length} 条，四要素齐全`);
 }
 
 console.log(fail ? `\n[✗] 失败 ${fail} 项` : "\n[OK] 生成引擎全部通过");
