@@ -47,6 +47,8 @@ const q = (sel) => {
 // 模拟页面上被渲染出来的可编辑元素（bindView 会给它们挂 onEdit）
 const metaEl = makeEl("[data-edit=meta]");
 metaEl.dataset.edit = "meta"; metaEl.dataset.field = "premise";
+const dialectEl = makeEl("[data-edit=meta][data-field=dialect]");
+dialectEl.dataset.edit = "meta"; dialectEl.dataset.field = "dialect";
 const scriptEls = [];
 for (let i = 0; i < 4; i++) {
   const e = makeEl("[data-edit=script]");
@@ -59,7 +61,7 @@ let clickHandler = null;
 const doc = {
   querySelector: q,
   querySelectorAll(sel) {
-    if (sel === "[data-edit]") return [metaEl, ...scriptEls];
+    if (sel === "[data-edit]") return [metaEl, dialectEl, ...scriptEls];
     if (sel === "#tabbar .tab") return [];
     return [];
   },
@@ -142,6 +144,37 @@ const t0 = Date.now();
   // ④ 切集不炸
   click({ act: "rtab", v: "script" }); click({ act: "ep", v: "2" });
   ok(main().length > 0, "切到第 2 集剧本页正常");
+
+  /* ---------- ⑤ 方言链路：选粤语 → 浓度 L3 → 重跑 → 剧本页出 DLC ---------- */
+  const cur = () => JSON.parse(store.get("sdm_projects_v2") || "[]")[0] || {};
+  dialectEl.value = "yue";
+  fire(dialectEl);
+  ok(cur().meta.dialect === "yue", "选粤语已写入 meta：" + cur().meta.dialect);
+  ok(!(cur().scripts || []).length, "换方言后旧剧本失效（需重跑）");
+
+  click({ act: "dlevel", v: "L3" });
+  ok(cur().meta.dialectLevel === "L3", "浓度切到 L3");
+
+  click({ act: "rerun" }); click({ act: "run" });
+  const t1 = Date.now();
+  while (Date.now() - t1 < 20000) {
+    if ((cur().scripts || []).length && (cur().storyboard || []).length) break;
+    await new Promise((r) => setTimeout(r, 200));
+  }
+  await new Promise((r) => setTimeout(r, 900));
+  const dlcScene = ((cur().scripts || [])[0] || { scenes: [] }).scenes.find((s) => s.dialect);
+  ok(!!dlcScene, "重跑后主角台词带方言契约：" + (dlcScene ? dlcScene.dialogue : "无"));
+
+  click({ act: "rtab", v: "script" });
+  const dh = main();
+  ok(dh.includes("方言契约"), "剧本页渲染出方言契约卡");
+  ok(dh.includes("用粤语说道"), "契约卡显示提示词语种指令");
+  ok(dh.includes("注音") && dh.includes("普通话"), "契约卡含注音与普通话释义行");
+  ok(dh.includes("全程正字字幕"), "L3 字幕方案已下发");
+
+  // 提示词子页应出现方言指令
+  click({ act: "rtab", v: "prompt" });
+  ok(main().includes("用粤语说道"), "提示词子页出现「用粤语说道{…}」");
 
   console.log(fail ? "\n[✗] 失败 " + fail + " 项" : "\n[OK] 端到端全绿");
   process.exit(fail ? 1 : 0);
